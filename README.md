@@ -29,28 +29,54 @@ Options:
   -s, --server <uri>       URI of Selenium server (default: http://localhost:4444/wd/hub)
 ```
 
-## Examples
+When it is succeeded to execute the snippet, `via-wd` outputs a JSON array of
+the following format to stdout.
 
-Tag statistics:
-
-```sh
-$ cat examples/tags.js | bin/via-wd https://github.com
 ```
+{
+  "uri": "<uri>",
+  "browser": "<browser>",
+  "result": <result-json>
+}
+```
+
+When it is failed, `error` is output instead of `result`.
+
+## Examples
 
 Maximum depth of nested elements:
 
-```sh
-$ cat examples/max-depth.js | bin/via-wd https://github.com
+```
+$ cat examples/max-depth.js | via-wd https://github.com
+
+[{"uri":"https://github.com","browser":"chrome","result":12}]
 ```
 
-## Prerequisite
+Tag statistics:
 
-* Selenium WebDriver
+```
+$ cat examples/tags.js | via-wd https://github.com
 
-It is easy to use docker Selenium images.
+[{"uri":"https://github.com","browser":"chrome","result":{"DD":3,"A":34,...}}]
 
-[Selenium Webdriver]: https://www.npmjs.com/package/selenium-webdriver
+```
+
+By using [jq], it is possible to process a result JSON as follow.
+
+```
+$ cat examples/tags.js | via-wd https://github.com | \
+    jq '.[] | { uri, browser, countTags: [.result[]] | add }'
+
+{
+  "uri": "https://github.com",
+  "browser": "chrome",
+  "countTags": 257
+}
+```
+
 [build-status]: https://travis-ci.org/MasayukiNagamachi/via-wd.svg?branch=master
 [build-page]: https://travis-ci.org/MasayukiNagamachi/via-wd
 [coverage-status]: https://codecov.io/gh/MasayukiNagamachi/via-wd/branch/master/graph/badge.svg
 [coverage-page]: https://codecov.io/gh/MasayukiNagamachi/via-wd
+[Selenium Webdriver]: https://www.npmjs.com/package/selenium-webdriver
+[jq]: https://stedolan.github.io/jq/
