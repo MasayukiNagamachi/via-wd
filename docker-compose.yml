@@ -1,0 +1,8 @@
+selenium_hub:
+  image: selenium/hub
+  ports:
+    - "4444:4444"
+selenium_node_chrome:
+  image: selenium/node-chrome
+  links:
+    - selenium_hub:hub

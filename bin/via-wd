@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+//
+// Copyright (c) 2016 Masayuki Nagamachi <masayuki.nagamachi@gmail.com>
+//
+// This file is distributed under the MIT license.
+// See LICENSE file in the project root for details.
+
+'use strict';
+
+const program = require('commander');
+const fs = require('fs');
+const viaWd = require('..');
+
+const DEFAULT_BROWSER = 'chrome'
+const DEFAULT_SERVER = 'http://localhost:4444/wd/hub'
+
+program
+  .version(require('../package.json').version)
+  .description(require('../package.json').description)
+  .usage('[options] <uri ...>')
+  .option(
+    '-b, --browser <browser>',
+    `Browser where the script will be executed (default: ${DEFAULT_BROWSER})`,
+      /^(chrome|firefox)$/,
+    DEFAULT_BROWSER)
+  .option(
+    '-s, --server <uri>',
+    `URI of Selenium server (default: ${DEFAULT_SERVER})`,
+    DEFAULT_SERVER)
+  .parse(process.argv);
+
+if (program.args.length == 0) {
+  program.help();
+}
+
+const options = {
+  browser: program.browser,
+  server: program.server,
+  uris: program.args
+};
+
+try {
+  const script = fs.readFileSync(process.stdin.fd, 'utf8');
+
+  viaWd(options).exec(script)
+    .then(JSON.stringify)
+    .then(console.log);
+} catch (e) {
+  program.help();
+}
