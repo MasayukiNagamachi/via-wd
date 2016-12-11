@@ -4,29 +4,29 @@
 [![Coverage Status][coverage-status]][coverage-page]
 
 `wd-runjs` is a tiny command which runs JavaScript code on browsers by piping
-stdin via [Selenium Webdriver].
+stdin via [Selenium WebDriver].
 
 ## Prerequisite
 
-`wd-runjs` uses a Selenium server for controlling remote browsers.
+`wd-runjs` uses a Selenium Server for controlling remote browsers.
 
 If Docker has already been installed on your local machine, you can use
 `docker-compose` with [docker-compose.yml](./docker-compose.yml) which starts a
-Selenium Hub container and a Selenium node with Chrome installed.
+Selenium Grid Hub and a Selenium node with Chrome installed.
 
 ## Usage
 
 ```
 Usage: wd-runjs [options] <uri ...>
 
-Run JavaScript code on browsers by piping stdin via Selenium Webdriver
+Run JavaScript code on browsers by piping stdin via Selenium WebDriver
 
 Options:
 
   -h, --help               output usage information
   -V, --version            output the version number
-  -b, --browser <browser>  Browser where the script will be executed (default: chrome)
-  -s, --server <uri>       URI of Selenium server (default: http://localhost:4444/wd/hub)
+  -b, --browser <browser>  Browser where the JavaScript code will be run (default: chrome)
+  -s, --server <uri>       URI of a Selenium Server (default: http://localhost:4444/wd/hub)
 ```
 
 When it is succeeded to execute the snippet, `wd-runjs` outputs a JSON array of
@@ -78,5 +78,5 @@ $ cat examples/tags.js | wd-runjs https://github.com | \
 [build-page]: https://travis-ci.org/MasayukiNagamachi/wd-runjs
 [coverage-status]: https://codecov.io/gh/MasayukiNagamachi/wd-runjs/branch/master/graph/badge.svg
 [coverage-page]: https://codecov.io/gh/MasayukiNagamachi/wd-runjs
-[Selenium Webdriver]: https://www.npmjs.com/package/selenium-webdriver
+[Selenium WebDriver]: https://www.npmjs.com/package/selenium-webdriver
 [jq]: https://stedolan.github.io/jq/

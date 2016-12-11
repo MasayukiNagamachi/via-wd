@@ -20,12 +20,12 @@ program
   .usage('[options] <uri ...>')
   .option(
     '-b, --browser <browser>',
-    `Browser where the script will be executed (default: ${DEFAULT_BROWSER})`,
+    `Browser where the JavaScript code will be run (default: ${DEFAULT_BROWSER})`,
       /^(chrome|firefox)$/,
     DEFAULT_BROWSER)
   .option(
     '-s, --server <uri>',
-    `URI of Selenium server (default: ${DEFAULT_SERVER})`,
+    `URI of a Selenium Server (default: ${DEFAULT_SERVER})`,
     DEFAULT_SERVER)
   .parse(process.argv);
 
