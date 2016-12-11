@@ -4,14 +4,14 @@
 // This file is distributed under the MIT license.
 // See LICENSE file in the project root for details.
 
-const viaWd = require('.');
-
 const chai = require('chai');
 const sinon = require('sinon');
 const webdriver = require('selenium-webdriver');
 
 const expect = chai.expect;
 chai.use(require('sinon-chai'));
+
+const ScriptRunner = require('.').ScriptRunner;
 
 let driverStub, builderStub;
 
@@ -33,8 +33,8 @@ afterEach(() => {
   driverStub = null;
 });
 
-describe('wiaWd', () => {
-  describe('#exec', () => {
+describe('ScriptRunner', () => {
+  describe('#run', () => {
     context('when multiple URIs are specified', () => {
       const options = {
         browser: 'browser',
@@ -47,7 +47,7 @@ describe('wiaWd', () => {
       beforeEach(() => {
         driverStub.executeScript
           .returns(webdriver.promise.Promise.resolve(1));
-        promise = viaWd(options).exec('script');
+        promise = new ScriptRunner(options).run('script');
       });
 
       afterEach(() => {
@@ -76,7 +76,7 @@ describe('wiaWd', () => {
       beforeEach(() => {
         driverStub.executeScript
           .returns(webdriver.promise.Promise.resolve(1));
-        promise = viaWd(options).exec('script');
+        promise = new ScriptRunner(options).run('script');
       });
 
       afterEach(() => {
@@ -114,7 +114,7 @@ describe('wiaWd', () => {
       beforeEach(() => {
         driverStub.executeScript
           .throws(new Error);
-        promise = viaWd(options).exec('script');
+        promise = new ScriptRunner(options).run('script');
       });
 
       afterEach(() => {
@@ -152,7 +152,7 @@ describe('wiaWd', () => {
       beforeEach(() => {
         driverStub.get
           .returns(webdriver.promise.rejected(new Error));
-        promise = viaWd(options).exec('script');
+        promise = new ScriptRunner(options).run('script');
       });
 
       afterEach(() => {

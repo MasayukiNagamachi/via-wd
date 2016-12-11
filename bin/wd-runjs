@@ -9,7 +9,7 @@
 
 const program = require('commander');
 const fs = require('fs');
-const viaWd = require('..');
+const ScriptRunner = require('..').ScriptRunner;
 
 const DEFAULT_BROWSER = 'chrome'
 const DEFAULT_SERVER = 'http://localhost:4444/wd/hub'
@@ -41,8 +41,8 @@ const options = {
 
 try {
   const script = fs.readFileSync(process.stdin.fd, 'utf8');
-
-  viaWd(options).exec(script)
+  new ScriptRunner(options)
+    .run(script)
     .then(JSON.stringify)
     .then(console.log);
 } catch (e) {

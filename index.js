@@ -9,12 +9,12 @@
 const _ = require('lodash');
 const webdriver = require('selenium-webdriver');
 
-class Executor {
+class ScriptRunner {
   constructor(options) {
     this.options = options;
   }
 
-  exec(script) {
+  run(script) {
     const builder = new webdriver.Builder()
       .forBrowser(this.options.browser)
       .usingServer(this.options.server);
@@ -34,4 +34,4 @@ class Executor {
   }
 }
 
-module.exports = (options) => new Executor(options);
+module.exports.ScriptRunner = ScriptRunner;

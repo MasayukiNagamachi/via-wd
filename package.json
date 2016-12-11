@@ -1,13 +1,17 @@
 {
-  "name": "via-wd",
+  "name": "wd-runjs",
   "version": "0.1.0",
-  "description": "Executes a JavaScript snippet on browsers by piping stdin via Selenium Webdriver",
+  "description": "Run JavaScript code on browsers by piping stdin via Selenium Webdriver",
+  "keyword": [
+    "selenium",
+    "webdriver"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha"
   },
   "bin": {
-    "via-wd": "bin/via-wd"
+    "wd-runjs": "bin/wd-runjs"
   },
   "author": "Masayuki Nagamachi <masayuki.nagamachi@gmail.com>",
   "license": "MIT",
