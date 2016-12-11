@@ -74,9 +74,9 @@ $ cat examples/tags.js | wd-runjs https://github.com | \
 }
 ```
 
-[build-status]: https://travis-ci.org/MasayukiNagamachi/wd-runjs.svg?branch=master
-[build-page]: https://travis-ci.org/MasayukiNagamachi/wd-runjs
-[coverage-status]: https://codecov.io/gh/MasayukiNagamachi/wd-runjs/branch/master/graph/badge.svg
-[coverage-page]: https://codecov.io/gh/MasayukiNagamachi/wd-runjs
+[build-status]: https://travis-ci.org/masnagam/wd-runjs.svg?branch=master
+[build-page]: https://travis-ci.org/masnagam/wd-runjs
+[coverage-status]: https://codecov.io/gh/masnagam/wd-runjs/branch/master/graph/badge.svg
+[coverage-page]: https://codecov.io/gh/masnagam/wd-runjs
 [Selenium WebDriver]: https://www.npmjs.com/package/selenium-webdriver
 [jq]: https://stedolan.github.io/jq/
