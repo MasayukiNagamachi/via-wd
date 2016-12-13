@@ -9,19 +9,33 @@
 const _ = require('lodash');
 const webdriver = require('selenium-webdriver');
 
+class FlowPool {
+  constructor(concurrency) {
+    this.concurrency_ = concurrency;
+    this.flows_ = _.times(concurrency, () => new webdriver.promise.ControlFlow);
+    this.roundRobinIndex_ = 0;
+  }
+
+  getFlow() {
+    const flow = this.flows_[this.roundRobinIndex_];
+    this.roundRobinIndex_ = (this.roundRobinIndex_ + 1) % this.concurrency_;
+    return flow;
+  }
+}
+
 class ScriptRunner {
   constructor(options) {
-    this.options = options;
+    this.options_ = options;
+    this.flowPool_ = new FlowPool(options.concurrency);
   }
 
   run(script) {
     const builder = new webdriver.Builder()
-      .forBrowser(this.options.browser)
-      .usingServer(this.options.server);
-
-    const promises = _.map(this.options.uris, (uri) => {
-      let value = { uri: uri, browser: this.options.browser };
-      const driver = builder.build();
+      .forBrowser(this.options_.browser)
+      .usingServer(this.options_.server);
+    const promises = _.map(this.options_.uris, (uri) => {
+      let value = { uri: uri, browser: this.options_.browser };
+      const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();
       return driver.get(uri)
         .then(() => driver.executeScript(script))
         .then((result) => value.result = result)
@@ -34,4 +48,5 @@ class ScriptRunner {
   }
 }
 
+module.exports.FlowPool = FlowPool;
 module.exports.ScriptRunner = ScriptRunner;

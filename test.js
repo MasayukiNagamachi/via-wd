@@ -11,33 +11,66 @@ const webdriver = require('selenium-webdriver');
 const expect = chai.expect;
 chai.use(require('sinon-chai'));
 
-const ScriptRunner = require('.').ScriptRunner;
+describe('FlowPool', () => {
+  const FlowPool = require('.').FlowPool;
 
-let driverStub, builderStub;
+  beforeEach(() => {
+    sinon.stub(webdriver.promise, 'ControlFlow');
+  });
 
-beforeEach(() => {
-  driverStub = sinon.createStubInstance(webdriver.WebDriver);
-  driverStub.get.returns(webdriver.promise.Promise.resolve());
+  afterEach(() => {
+    webdriver.promise.ControlFlow.restore();
+  });
 
-  builderStub = sinon.createStubInstance(webdriver.Builder);
-  builderStub.forBrowser.returns(builderStub);
-  builderStub.usingServer.returns(builderStub);
-  builderStub.build.returns(driverStub);
+  describe('#constructor', () => {
+    it('should create ControlFlows as many as the number of cuncurrency ', () => {
+      new FlowPool(10);
+      expect(webdriver.promise.ControlFlow).to.have.callCount(10);
+    });
+  });
 
-  sinon.stub(webdriver, 'Builder').returns(builderStub);
-});
-
-afterEach(() => {
-  webdriver.Builder.restore();
-  builderStub = null;
-  driverStub = null;
+  describe('#getFlow', () => {
+    it('should return objects cyclically', () => {
+      const flowPool = new FlowPool(2);
+      const flow1 = flowPool.getFlow();
+      const flow2 = flowPool.getFlow();
+      expect(flowPool.getFlow()).to.equal(flow1);
+      expect(flowPool.getFlow()).to.equal(flow2);
+      expect(flowPool.getFlow()).to.equal(flow1);
+      expect(flowPool.getFlow()).to.equal(flow2);
+    });
+  });
 });
 
 describe('ScriptRunner', () => {
+  const ScriptRunner = require('.').ScriptRunner;
+
+  let driverStub, builderStub;
+
+  beforeEach(() => {
+    driverStub = sinon.createStubInstance(webdriver.WebDriver);
+    driverStub.get.returns(webdriver.promise.Promise.resolve());
+
+    builderStub = sinon.createStubInstance(webdriver.Builder);
+    builderStub.forBrowser.returns(builderStub);
+    builderStub.usingServer.returns(builderStub);
+    builderStub.setControlFlow.returns(builderStub);
+    builderStub.build.returns(driverStub);
+
+    sinon.stub(webdriver, 'Builder').returns(builderStub);
+  });
+
+  afterEach(() => {
+    webdriver.Builder.restore();
+    builderStub = null;
+    driverStub = null;
+  });
+
   describe('#run', () => {
     context('when multiple URIs are specified', () => {
       const options = {
         browser: 'browser',
+        concurrency: 1,
         server: 'server',
         uris: ['uri1', 'uri2', 'uri3', 'uri4']
       };
@@ -67,6 +100,7 @@ describe('ScriptRunner', () => {
     context('when driver.executeScript() returns a result', () => {
       const options = {
         browser: 'browser',
+        concurrency: 1,
         server: 'server',
         uris: ['uri']
       };
@@ -105,6 +139,7 @@ describe('ScriptRunner', () => {
     context('when driver.executeScript() throws an error', () => {
       const options = {
         browser: 'browser',
+        concurrency: 1,
         server: 'server',
         uris: ['uri']
       };
@@ -143,6 +178,7 @@ describe('ScriptRunner', () => {
     context('when driver.get() throws an error', () => {
       const options = {
         browser: 'browser',
+        concurrency: 1,
         server: 'server',
         uris: ['uri']
       };

@@ -12,6 +12,7 @@ const fs = require('fs');
 const ScriptRunner = require('..').ScriptRunner;
 
 const DEFAULT_BROWSER = 'chrome'
+const DEFAULT_CONCURRENCY = 1
 const DEFAULT_SERVER = 'http://localhost:4444/wd/hub'
 
 program
@@ -21,8 +22,13 @@ program
   .option(
     '-b, --browser <browser>',
     `Browser where the JavaScript code will be run (default: ${DEFAULT_BROWSER})`,
-      /^(chrome|firefox)$/,
+    /^(chrome|firefox)$/,
     DEFAULT_BROWSER)
+  .option(
+    '-c, --concurrency <number>',
+    `Number of ControlFlows to be run at the same time (defualt: ${DEFAULT_CONCURRENCY})`,
+    (v) => parseInt(v),
+    DEFAULT_CONCURRENCY)
   .option(
     '-s, --server <uri>',
     `URI of a Selenium Server (default: ${DEFAULT_SERVER})`,
@@ -35,6 +41,7 @@ if (program.args.length == 0) {
 
 const options = {
   browser: program.browser,
+  concurrency: program.concurrency,
   server: program.server,
   uris: program.args
 };
