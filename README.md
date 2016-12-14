@@ -1,7 +1,9 @@
 # wd-runjs
 
-[![Build Status][build-status]][build-page]
-[![Coverage Status][coverage-status]][coverage-page]
+[![Build Status][build-status]][build-site]
+[![Coverage Status][coverage-status]][coverage-site]
+[![Dependency Status][dependency-status]][dependency-site]
+[![NPM Version][npm-version]][npm-site]
 
 `wd-runjs` is a tiny command which runs JavaScript code on browsers by piping
 stdin via [Selenium WebDriver].
@@ -125,8 +127,12 @@ This software is distributed under the MIT license.  See [LICENSE](./LICENSE)
 file for details.
 
 [build-status]: https://travis-ci.org/masnagam/wd-runjs.svg?branch=master
-[build-page]: https://travis-ci.org/masnagam/wd-runjs
+[build-site]: https://travis-ci.org/masnagam/wd-runjs
 [coverage-status]: https://codecov.io/gh/masnagam/wd-runjs/branch/master/graph/badge.svg
-[coverage-page]: https://codecov.io/gh/masnagam/wd-runjs
+[coverage-site]: https://codecov.io/gh/masnagam/wd-runjs
+[dependency-status]: https://gemnasium.com/badges/github.com/masnagam/wd-runjs.svg
+[dependency-site]: https://gemnasium.com/github.com/masnagam/wd-runjs
+[npm-version]: https://img.shields.io/npm/v/wd-runjs.svg
+[npm-site]: https://www.npmjs.com/package/wd-runjs
 [Selenium WebDriver]: https://www.npmjs.com/package/selenium-webdriver
 [jq]: https://stedolan.github.io/jq/
