@@ -31,8 +31,8 @@ Selenium Grid Hub and a Selenium node with Chrome installed.
     -s, --server <uri>          URI of a Selenium Server (default: http://localhost:4444/wd/hub)
 ```
 
-When it is succeeded to execute the snippet, `wd-runjs` outputs a JSON array of
-the following format to stdout.
+When it is succeeded to execute the JavaScript code, `wd-runjs` outputs a JSON
+array of the following format to stdout.
 
 ```
 {
