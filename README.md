@@ -27,6 +27,7 @@ Selenium Grid Hub and a Selenium node with Chrome installed.
     -V, --version               output the version number
     -b, --browser <browser>     Browser where the JavaScript code will be run (default: chrome)
     -c, --concurrency <number>  Number of ControlFlows to be run at the same time (default: 1)
+    -l, --logging <filters>     Filters for the local logging of selenium-webdriver (default: '')
     -s, --server <uri>          URI of a Selenium Server (default: http://localhost:4444/wd/hub)
 ```
 
@@ -87,6 +88,36 @@ $ echo "return 'hello';" | wd-runjs -c 3 $(cat uris)
 
 It is recommended to specify the concurrency number less than the number of
 available Chrome instances.
+
+## Logging
+
+By using the logging option, it is possible to output messages for debugging.
+
+The following loggers are defined in wd-runjs.
+
+* wd-runjs.flow-pool
+* wd-runjs.script-runner
+* webdriver.Builder
+* webdriver.http
+* webdriver.http.Executor
+* promise
+
+For available levels, see [selenium-webdriver's document](http://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/lib/logging_exports_Level.html).
+
+It is possible to specify multiple loggers and levels as follow:
+
+```
+$ wd-runjs -l 'wd-runjs:DEBUG,promise:FINER' https://github.com/
+```
+
+For outputting all log messages, specify the logging option like below:
+
+```
+$ wd-runjs -l ':ALL' https://github.com/
+```
+
+At this time, [the remove logging](https://github.com/SeleniumHQ/selenium/wiki/Logging)
+is not supported.
 
 ## License
 

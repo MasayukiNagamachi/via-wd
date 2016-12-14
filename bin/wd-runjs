@@ -8,11 +8,14 @@
 'use strict';
 
 const program = require('commander');
+const _ = require('lodash');
 const fs = require('fs');
 const ScriptRunner = require('..').ScriptRunner;
+const logging = require('..').logging;
 
 const DEFAULT_BROWSER = 'chrome'
 const DEFAULT_CONCURRENCY = 1
+const DEFAULT_LOGGING = ''
 const DEFAULT_SERVER = 'http://localhost:4444/wd/hub'
 
 program
@@ -26,9 +29,17 @@ program
     DEFAULT_BROWSER)
   .option(
     '-c, --concurrency <number>',
-    `Number of ControlFlows to be run at the same time (defualt: ${DEFAULT_CONCURRENCY})`,
-    (v) => parseInt(v),
+    `Number of ControlFlows to be run at the same time (default: ${DEFAULT_CONCURRENCY})`,
+    (number) => parseInt(number),
     DEFAULT_CONCURRENCY)
+  .option(
+    '-l, --logging <filters>',
+    `Filters for the local logging of selenium-webdriver (default: '${DEFAULT_LOGGING}')`,
+    (filters) => _(filters)
+      .split(/\s*,\s*/)
+      .map((filter) => _.zipObject(['logger', 'level'], _.split(filter, ':')))
+      .value(),
+    DEFAULT_LOGGING)
   .option(
     '-s, --server <uri>',
     `URI of a Selenium Server (default: ${DEFAULT_SERVER})`,
@@ -36,7 +47,14 @@ program
   .parse(process.argv);
 
 if (program.args.length == 0) {
-  program.help();
+  console.error('URI is required');
+  process.exit(1);
+}
+
+if (program.logging.length > 0) {
+  logging.setSink((msg) => console.error(msg));
+  logging.setFilters(program.logging);
+  logging.enable();
 }
 
 const options = {
@@ -46,12 +64,11 @@ const options = {
   uris: program.args
 };
 
-try {
-  const script = fs.readFileSync(process.stdin.fd, 'utf8');
+let script = '';
+process.stdin.on('data', (str) => script += str);
+process.stdin.on('end', () => {
   new ScriptRunner(options)
     .run(script)
     .then(JSON.stringify)
     .then(console.log);
-} catch (e) {
-  program.help();
-}
+});

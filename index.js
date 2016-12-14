@@ -7,29 +7,75 @@
 'use strict';
 
 const _ = require('lodash');
+const moment = require('moment');
 const webdriver = require('selenium-webdriver');
+
+// Logging
+
+let gLogSink_ = () => {};
+
+function logHandler_(entry) {
+  const timestamp = moment(entry.timestamp).format();  // ISO-8601 local time
+  const level = entry.level.name;
+  const message = entry.message;
+  gLogSink_(`[${timestamp}][${level}] ${message}`);
+}
+
+function setLogSink(sink) {
+  if (_.isFunction(sink)) {
+    gLogSink_ = sink;
+  } else {
+    gLogSink_ = () => {};
+  }
+}
+
+function setLogFilters(filters) {
+  _.each(filters, (filter) => {
+    const level = _.isEmpty(filter.level) ? null :
+      webdriver.logging.getLevel(filter.level);
+    webdriver.logging.getLogger(filter.logger).setLevel(level);
+  });
+}
+
+function enableLogging() {
+  webdriver.logging.getLogger().addHandler(logHandler_);
+}
+
+function disableLogging() {
+  webdriver.logging.getLogger().removeHandler(logHandler_);
+}
+
+// FlowControl Pool
 
 class FlowPool {
   constructor(concurrency) {
     this.concurrency_ = concurrency;
     this.flows_ = _.times(concurrency, () => new webdriver.promise.ControlFlow);
     this.roundRobinIndex_ = 0;
+    this.logger_ = webdriver.logging.getLogger('wd-runjs.flow-pool');
+    this.logger_.debug(`concurrency: ${concurrency}`);
   }
 
   getFlow() {
+    this.logger_.debug(`round-robin index: ${this.roundRobinIndex_}`);
     const flow = this.flows_[this.roundRobinIndex_];
     this.roundRobinIndex_ = (this.roundRobinIndex_ + 1) % this.concurrency_;
     return flow;
   }
 }
 
+// ScriptRunner
+
 class ScriptRunner {
   constructor(options) {
     this.options_ = options;
     this.flowPool_ = new FlowPool(options.concurrency);
+    this.logger_ = webdriver.logging.getLogger('wd-runjs.script-runner');
+    this.logger_.debug(JSON.stringify(options));
   }
 
   run(script) {
+    this.logger_.debug(`<<EOS\n${script}EOS`);
     const builder = new webdriver.Builder()
       .forBrowser(this.options_.browser)
       .usingServer(this.options_.server);
@@ -48,5 +94,11 @@ class ScriptRunner {
   }
 }
 
+module.exports.logging = {
+  setSink: setLogSink,
+  setFilters: setLogFilters,
+  enable: enableLogging,
+  disable: disableLogging
+};
 module.exports.FlowPool = FlowPool;
 module.exports.ScriptRunner = ScriptRunner;

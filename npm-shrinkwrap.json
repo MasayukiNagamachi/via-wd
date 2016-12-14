@@ -1,6 +1,6 @@
 {
   "name": "wd-runjs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "dependencies": {
     "adm-zip": {
       "version": "0.4.7",
@@ -61,6 +61,11 @@
       "version": "3.0.3",
       "from": "minimatch@>=3.0.2 <4.0.0",
       "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz"
+    },
+    "moment": {
+      "version": "2.17.1",
+      "from": "moment@latest",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.17.1.tgz"
     },
     "once": {
       "version": "1.3.3",

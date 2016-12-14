@@ -6,10 +6,82 @@
 
 const chai = require('chai');
 const sinon = require('sinon');
+const moment = require('moment');
 const webdriver = require('selenium-webdriver');
+const util = require('util');
 
 const expect = chai.expect;
 chai.use(require('sinon-chai'));
+
+describe('logging', () => {
+  const logging = require('.').logging;
+
+  describe('setFilters', () => {
+    let logger = null;
+
+    beforeEach(() => {
+      logger = sinon.createStubInstance(webdriver.logging.Logger);
+      sinon.stub(webdriver.logging, 'getLogger', (name) => {
+        return logger;
+      });
+    });
+
+    afterEach(() => {
+      webdriver.logging.getLogger.restore();
+    });
+
+    context('when level is a non-empty string', () => {
+      it('should call Logger.setLevel with a specified level', () => {
+        logging.setFilters([{ logger: 'test', level: 'DEBUG' }]);
+        expect(logger.setLevel).to.have.been.calledOnce;
+        expect(logger.setLevel)
+          .to.have.been.calledWith(webdriver.logging.Level.DEBUG);
+      });
+    });
+
+    context('when level is an empty string', () => {
+      it('should call Logger.setLevel with null', () => {
+        logging.setFilters([{ logger: 'test', level: '' }]);
+        expect(logger.setLevel).to.have.been.calledOnce;
+        expect(logger.setLevel).to.have.been.calledWith(null);
+      });
+    });
+  });
+
+  describe('enable/disable', () => {
+    let clock = null;
+    let sink = null;
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers();
+      sink = sinon.spy();
+      logging.setSink(sink);
+      logging.setFilters([{ logger: 'test', level: 'DEBUG' }]);
+    });
+
+    afterEach(() => {
+      logging.setFilters([{ logger: 'test', level: '' }]);
+      logging.setSink(null);
+      sink = null;
+      clock.restore();
+      clock = null;
+    });
+
+    it('should call a log sink function for logging', () => {
+      const logger = webdriver.logging.getLogger('test');
+      logger.debug('debug1');
+      logger.fine('fine1');
+      logging.enable();
+      logger.debug('debug2');
+      logger.fine('fine2');
+      logging.disable();
+      expect(sink).to.have.been.calledOnce;
+      expect(sink).to.have.been.calledWith(util.format(
+        '[%s][%s] [test] debug2',
+        moment(0).format(), webdriver.logging.Level.DEBUG));
+    });
+  });
+});
 
 describe('FlowPool', () => {
   const FlowPool = require('.').FlowPool;
