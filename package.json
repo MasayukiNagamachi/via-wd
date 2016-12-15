@@ -2,10 +2,6 @@
   "name": "wd-runjs",
   "version": "0.4.0",
   "description": "Run JavaScript code on browsers by piping stdin via Selenium WebDriver",
-  "keywords": [
-    "selenium",
-    "webdriver"
-  ],
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha"
@@ -13,6 +9,11 @@
   "bin": {
     "wd-runjs": "bin/wd-runjs"
   },
+  "repository": "masnagam/wd-runjs",
+  "keywords": [
+    "selenium",
+    "webdriver"
+  ],
   "author": "Masayuki Nagamachi <masayuki.nagamachi@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -27,5 +28,8 @@
     "mocha": "^3.2.0",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0"
+  },
+  "engines": {
+    "node": ">= 4.0.0"
   }
 }
