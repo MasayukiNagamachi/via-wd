@@ -12,9 +12,9 @@ stdin via [Selenium WebDriver].
 
 `wd-runjs` uses a Selenium Server for controlling remote browsers.
 
-If Docker has already been installed on your local machine, you can use
-`docker-compose` with [docker-compose.yml](./docker-compose.yml) which starts a
-Selenium Grid Hub and a Selenium node with Chrome installed.
+If you have already installed Docker onto your local machine, you can use
+`docker-compose` for starting a Selenium Grid Hub and Selenium nodes.  See
+[masnagam/docker-compose-collection] for details.
 
 ## Usage
 
@@ -136,3 +136,4 @@ file for details.
 [npm-site]: https://www.npmjs.com/package/wd-runjs
 [Selenium WebDriver]: https://www.npmjs.com/package/selenium-webdriver
 [jq]: https://stedolan.github.io/jq/
+[masnagam/docker-compose-collection]: https://github.com/masnagam/docker-compose-collection/tree/master/selenium-grid
