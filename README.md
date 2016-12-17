@@ -65,7 +65,7 @@ $ cat examples/tags.js | wd-runjs https://github.com/
 
 ```
 
-By using [jq], it is possible to process a result JSON as follow.
+By using [jq], it is possible to process a result JSON as follows:
 
 ```
 $ cat examples/tags.js | wd-runjs https://github.com/ | \
@@ -106,7 +106,7 @@ The following loggers are defined in wd-runjs.
 
 For available levels, see [selenium-webdriver's document](http://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/lib/logging_exports_Level.html).
 
-It is possible to specify multiple loggers and levels as follow:
+It is possible to specify multiple loggers and levels as follows:
 
 ```
 $ wd-runjs -l 'wd-runjs:DEBUG,promise:FINER' https://github.com/
