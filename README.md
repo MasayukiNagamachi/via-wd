@@ -118,7 +118,7 @@ For outputting all log messages, specify the logging option like below:
 $ wd-runjs -l ':ALL' https://github.com/
 ```
 
-At this time, [the remove logging](https://github.com/SeleniumHQ/selenium/wiki/Logging)
+At this time, [the remote logging](https://github.com/SeleniumHQ/selenium/wiki/Logging)
 is not supported.
 
 ## License
