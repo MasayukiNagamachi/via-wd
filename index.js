@@ -69,6 +69,8 @@ class FlowPool {
 class ScriptRunner {
   constructor(options) {
     this.options_ = options;
+    this.aborted_ = false;
+    this.promises_ = [];
     this.flowPool_ = new FlowPool(options.concurrency);
     this.logger_ = webdriver.logging.getLogger('wd-runjs.script-runner');
     this.logger_.debug(JSON.stringify(options));
@@ -82,15 +84,65 @@ class ScriptRunner {
     const promises = _.map(this.options_.uris, (uri) => {
       let value = { uri: uri, browser: this.options_.browser };
       const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();
-      return driver.get(uri)
-        .then(() => driver.executeScript(script))
-        .then((result) => value.result = result)
-        .catch((error) => value.error = error)
-        .then(() => driver.quit())
+      return driver
+        .then(this.abortable_(() => {
+          this.logger_.debug(`${uri}: loading...`);
+          return driver.get(uri);
+        }))
+        .then(this.abortable_(() => {
+          this.logger_.debug(`${uri}: loaded, then run the script...`);
+          return driver.executeScript(script);
+        }))
+        .then((result) => {
+          this.logger_.debug(`${uri}: done`);
+          value.result = result;
+        })
+        .catch((error) => {
+          this.logger_.debug(`${uri}: failed`);
+          value.error = error.message;
+        })
+        .then(() => {
+          this.logger_.debug(`${uri}: quit`);
+          return driver.quit();
+        })
+        .catch(() => {})  // ignore errors occurred in quit()
         .then(() => value);
     });
 
-    return webdriver.promise.all(promises);
+    this.promises_ = _.concat(this.promises_, promises);
+
+    return webdriver.promise.all(promises)
+      .then((results) => {  // always reach here even if errors occurred
+        // promises in the parent lexical scope are resolved.
+        // Remove them from `this.promises_`.
+        this.promises_ = _.difference(this.promises_, promises);
+        return results;
+      });
+  }
+
+  abort() {
+    this.logger_.debug('abort');
+    // The below code doesn't work as expected, espetially when the number of
+    // concurrency is larger than 1.
+    //
+    //   _.each(this.promises_, (promise) => promise.cancel('aborted'));
+    //
+    // Browser instances sometimes will not be closed even when quit() is called
+    // on all drivers.
+    //
+    // For avoiding the above situation, ScriptRunner checks `aborted_` flag
+    // before calling WebDriver's methods.
+    this.aborted_ = true;
+  }
+
+  abortable_(func) {
+    return _.rest((args) => {
+      if (this.aborted_) {
+        return webdriver.promise.Promise.reject(
+          webdriver.promise.CancellationError.wrap('aborted'));
+      }
+      return func.apply(this, args);
+    });
   }
 }
 

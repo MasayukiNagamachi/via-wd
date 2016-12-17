@@ -66,9 +66,17 @@ const options = {
 
 let script = '';
 process.stdin.on('data', (str) => script += str);
+
+let runner = null;
 process.stdin.on('end', () => {
-  new ScriptRunner(options)
-    .run(script)
-    .then(JSON.stringify)
-    .then(console.log);
+  runner = new ScriptRunner(options);
+  runner.run(script).then(JSON.stringify).then(console.log);
+});
+
+process.on('SIGINT', () => {  // Ctrl-C
+  if (_.isNil(runner)) {
+    process.exit(1);
+  } else {
+    runner.abort();
+  }
 });

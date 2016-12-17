@@ -1,3 +1,7 @@
+## 0.5.0 (2016-12-17)
+
+* Abort the execution when SIGINT occurs
+
 ## 0.4.0 (2016-12-14)
 
 * Update dependencies

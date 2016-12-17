@@ -4,6 +4,7 @@
 // This file is distributed under the MIT license.
 // See LICENSE file in the project root for details.
 
+const _ = require('lodash');
 const chai = require('chai');
 const sinon = require('sinon');
 const moment = require('moment');
@@ -120,8 +121,10 @@ describe('ScriptRunner', () => {
   let driverStub, builderStub;
 
   beforeEach(() => {
-    driverStub = sinon.createStubInstance(webdriver.WebDriver);
-    driverStub.get.returns(webdriver.promise.Promise.resolve());
+    driverStub = webdriver.promise.Promise.resolve();
+    driverStub.get = sinon.stub();
+    driverStub.executeScript = sinon.stub();
+    driverStub.quit = sinon.stub();
 
     builderStub = sinon.createStubInstance(webdriver.Builder);
     builderStub.forBrowser.returns(builderStub);
@@ -157,7 +160,6 @@ describe('ScriptRunner', () => {
 
       afterEach(() => {
         promise = null;
-        driverStub.executeScript.restore();
       });
 
       it('should get results as many as URIs', (done) => {
@@ -187,7 +189,6 @@ describe('ScriptRunner', () => {
 
       afterEach(() => {
         promise = null;
-        driverStub.executeScript.restore();
       });
 
       it('should call driver.quit()', (done) => {
@@ -219,14 +220,12 @@ describe('ScriptRunner', () => {
       let promise;
 
       beforeEach(() => {
-        driverStub.executeScript
-          .throws(new Error);
+        driverStub.executeScript.throws(new Error);
         promise = new ScriptRunner(options).run('script');
       });
 
       afterEach(() => {
         promise = null;
-        driverStub.executeScript.restore();
       });
 
       it('should call driver.quit()', (done) => {
@@ -258,14 +257,12 @@ describe('ScriptRunner', () => {
       let promise;
 
       beforeEach(() => {
-        driverStub.get
-          .returns(webdriver.promise.rejected(new Error));
+        driverStub.get.throws(new Error);
         promise = new ScriptRunner(options).run('script');
       });
 
       afterEach(() => {
         promise = null;
-        driverStub.get.restore();
       });
 
       it('should call driver.quit()', (done) => {
@@ -289,6 +286,73 @@ describe('ScriptRunner', () => {
           .then((results) => {
             expect(results[0].result).to.not.exist;
             expect(results[0].error).to.exist;
+          })
+          .then(done);
+      });
+    });
+  });
+
+  describe('#abort', () => {
+    const options = {
+      browser: 'browser',
+      concurrency: 1,
+      server: 'server',
+      uris: ['uri1', 'uri2']
+    };
+
+    let runner = null;
+
+    beforeEach(() => {
+      runner = new ScriptRunner(options);
+    });
+
+    afterEach(() => {
+      runner = null;
+    });
+
+    context('when it is called before running script', () => {
+      let promise = null;
+
+      beforeEach(() => {
+        promise = runner.run('script');
+        runner.abort();
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should abort the all promises', (done) => {
+        promise
+          .then((results) => {
+            _.each(results, (result) => {
+              expect(result).to.not.have.property('result');
+              expect(result).to.have.property('error');
+            });
+          })
+          .then(done);
+      });
+    });
+
+    context('when it is called after running script', () => {
+      let promise = null;
+
+      beforeEach(() => {
+        driverStub.executeScript = () => runner.abort();
+        promise = runner.run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should abort the remaining promises', (done) => {
+        promise
+          .then((results) => {
+            expect(results[0]).to.have.property('result');
+            expect(results[0]).to.not.have.property('error');
+            expect(results[1]).to.not.have.property('result');
+            expect(results[1]).to.have.property('error');
           })
           .then(done);
       });

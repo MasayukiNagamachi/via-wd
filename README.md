@@ -1,9 +1,9 @@
 # wd-runjs
 
+[![NPM Version][npm-version]][npm-site]
 [![Build Status][build-status]][build-site]
 [![Coverage Status][coverage-status]][coverage-site]
 [![Dependency Status][dependency-status]][dependency-site]
-[![NPM Version][npm-version]][npm-site]
 
 `wd-runjs` is a tiny command which runs JavaScript code on browsers by piping
 stdin via [Selenium WebDriver].
