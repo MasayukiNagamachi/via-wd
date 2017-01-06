@@ -31,5 +31,14 @@
   },
   "engines": {
     "node": ">= 6.0.0"
-  }
+  },
+  "files": [
+    "bin",
+    "CHANGES.md",
+    "examples",
+    "index.js",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ]
 }
