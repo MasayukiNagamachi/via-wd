@@ -1,6 +1,6 @@
 {
   "name": "wd-runjs",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "Run JavaScript code on browsers by piping stdin via Selenium WebDriver",
   "main": "index.js",
   "scripts": {
