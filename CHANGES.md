@@ -1,6 +1,7 @@
 ## 1.0.0 (2017-01-06)
 
 * Navigation script
+* Update dependencies
 
 ## 0.5.0 (2016-12-17)
 
