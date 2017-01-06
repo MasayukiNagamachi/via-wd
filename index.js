@@ -8,6 +8,8 @@
 
 const _ = require('lodash');
 const moment = require('moment');
+const path = require('path');
+const url = require('url');
 const webdriver = require('selenium-webdriver');
 
 // Logging
@@ -86,11 +88,11 @@ class ScriptRunner {
       const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();
       return driver
         .then(this.abortable_(() => {
-          this.logger_.debug(`${uri}: loading...`);
-          return driver.get(uri);
+          this.logger_.debug(`${uri}: start nativation...`);
+          return this.navigate_(driver, uri);
         }))
         .then(this.abortable_(() => {
-          this.logger_.debug(`${uri}: loaded, then run the script...`);
+          this.logger_.debug(`${uri}: end navigation, then run the script...`);
           return driver.executeScript(script);
         }))
         .then((result) => {
@@ -143,6 +145,16 @@ class ScriptRunner {
       }
       return func.apply(this, args);
     });
+  }
+
+  navigate_(driver, uri) {
+    const parsedUri = url.parse(uri);
+    if (_.isEmpty(parsedUri.protocol)) {
+      const navigation = require(path.resolve(uri));
+      return navigation.navigate(driver);
+    } else {
+      return driver.get(uri);
+    }
   }
 }
 

@@ -21,7 +21,7 @@ const DEFAULT_SERVER = 'http://localhost:4444/wd/hub'
 program
   .version(require('../package.json').version)
   .description(require('../package.json').description)
-  .usage('[options] <uri ...>')
+  .usage('[options] <URI or path to a navigation script...>')
   .option(
     '-b, --browser <browser>',
     `Browser where the JavaScript code will be run (default: ${DEFAULT_BROWSER})`,

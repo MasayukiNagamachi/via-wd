@@ -6,16 +6,17 @@
 
 const _ = require('lodash');
 const chai = require('chai');
-const sinon = require('sinon');
 const moment = require('moment');
-const webdriver = require('selenium-webdriver');
+const path = require('path');
+const sinon = require('sinon');
 const util = require('util');
+const webdriver = require('selenium-webdriver');
 
 const expect = chai.expect;
 chai.use(require('sinon-chai'));
 
 describe('logging', () => {
-  const logging = require('.').logging;
+  const logging = require('..').logging;
 
   describe('setFilters', () => {
     let logger = null;
@@ -85,7 +86,7 @@ describe('logging', () => {
 });
 
 describe('FlowPool', () => {
-  const FlowPool = require('.').FlowPool;
+  const FlowPool = require('..').FlowPool;
 
   beforeEach(() => {
     sinon.stub(webdriver.promise, 'ControlFlow');
@@ -116,7 +117,7 @@ describe('FlowPool', () => {
 });
 
 describe('ScriptRunner', () => {
-  const ScriptRunner = require('.').ScriptRunner;
+  const ScriptRunner = require('..').ScriptRunner;
 
   let driverStub, builderStub;
 
@@ -147,7 +148,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         concurrency: 1,
         server: 'server',
-        uris: ['uri1', 'uri2', 'uri3', 'uri4']
+        uris: ['uri:uri1', 'uri:uri2', 'uri:uri3', 'uri:uri4']
       };
 
       let promise;
@@ -176,7 +177,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         concurrency: 1,
         server: 'server',
-        uris: ['uri']
+        uris: ['uri:uri']
       };
 
       let promise;
@@ -214,7 +215,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         concurrency: 1,
         server: 'server',
-        uris: ['uri']
+        uris: ['uri:uri']
       };
 
       let promise;
@@ -251,7 +252,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         concurrency: 1,
         server: 'server',
-        uris: ['uri']
+        uris: ['uri:uri']
       };
 
       let promise;
@@ -290,6 +291,49 @@ describe('ScriptRunner', () => {
           .then(done);
       });
     });
+
+    context('when a navigation script is used', () => {
+      const options = {
+        browser: 'browser',
+        concurrency: 1,
+        server: 'server',
+        uris: [path.join(__dirname, 'navigation.js')]
+      };
+
+      let promise;
+
+      beforeEach(() => {
+        promise = new ScriptRunner(options).run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should not call driver.get()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.get).to.have.not.been.called;
+          })
+          .then(done);
+      });
+
+      it('should call driver.executeScript()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.executeScript).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+
+      it('should call driver.quit()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.quit).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+    });
   });
 
   describe('#abort', () => {
@@ -297,7 +341,7 @@ describe('ScriptRunner', () => {
       browser: 'browser',
       concurrency: 1,
       server: 'server',
-      uris: ['uri1', 'uri2']
+      uris: ['uri:uri1', 'uri:uri2']
     };
 
     let runner = null;

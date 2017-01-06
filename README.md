@@ -19,7 +19,7 @@ If you have already installed Docker onto your local machine, you can use
 ## Usage
 
 ```
-  Usage: wd-runjs [options] <uri ...>
+  Usage: wd-runjs [options] <URI or path to a navigation script...>
 
   Run JavaScript code on browsers by piping stdin via Selenium WebDriver
 
@@ -90,6 +90,24 @@ $ echo "return 'hello';" | wd-runjs -c 3 $(cat uris)
 
 It is recommended to specify the concurrency number less than the number of
 available Chrome instances.
+
+Navigation script:
+
+```
+$ cat examples/tags.js | wd-runjs examples/navigation.js
+```
+
+The navigation script has to export `navigate()` function like below:
+
+```javascript
+module.exports.navigate = (driver) => {
+  driver.get('http://www.google.com/ncr');
+  ...
+};
+```
+
+By using the navigation script, it is possible to run a script on web pages
+where the user authentication is required.
 
 ## Logging
 
