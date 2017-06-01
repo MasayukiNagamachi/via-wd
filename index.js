@@ -81,8 +81,10 @@ class ScriptRunner {
   run(script) {
     this.logger_.debug(`<<EOS\n${script}EOS`);
     const builder = new webdriver.Builder()
-      .forBrowser(this.options_.browser)
-      .usingServer(this.options_.server);
+      .forBrowser(this.options_.browser);
+    if (this.options_.server) {
+      builder.usingServer(this.options_.server);
+    }
     const promises = _.map(this.options_.uris, (uri) => {
       let value = { uri: uri, browser: this.options_.browser };
       const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();

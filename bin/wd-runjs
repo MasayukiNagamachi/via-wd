@@ -13,10 +13,11 @@ const fs = require('fs');
 const ScriptRunner = require('..').ScriptRunner;
 const logging = require('..').logging;
 
-const DEFAULT_BROWSER = 'chrome'
-const DEFAULT_CONCURRENCY = 1
-const DEFAULT_LOGGING = ''
-const DEFAULT_SERVER = 'http://localhost:4444/wd/hub'
+const DEFAULT_BROWSER = 'chrome';
+const DEFAULT_CONCURRENCY = 1;
+const DEFAULT_LOGGING = '';
+const DEFAULT_SERVER = false;
+const DEFAULT_SERVER_URI = 'http://localhost:4444/wd/hub';
 
 program
   .version(require('../package.json').version)
@@ -41,10 +42,16 @@ program
       .value(),
     DEFAULT_LOGGING)
   .option(
-    '-s, --server <uri>',
-    `URI of a Selenium Server (default: ${DEFAULT_SERVER})`,
+    '-s, --server [uri]',
+    `Use a Selenium Server (default: ${DEFAULT_SERVER})`,
     DEFAULT_SERVER)
   .parse(process.argv);
+
+if (program.server) {
+  if (program.server === true) {
+    program.server = DEFAULT_SERVER_URI;
+  }
+}
 
 if (program.args.length == 0) {
   console.error('URI is required');

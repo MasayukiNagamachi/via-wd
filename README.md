@@ -10,7 +10,8 @@ stdin via [Selenium WebDriver].
 
 ## Prerequisite
 
-`wd-runjs` uses a Selenium Server for controlling remote browsers.
+`wd-runjs` uses the WebDriver or the Selenium Server for running JavaScript code
+on browsers.
 
 If you have already installed Docker onto your local machine, you can use
 `docker-compose` for starting a Selenium Grid Hub and Selenium nodes.  See
@@ -30,7 +31,7 @@ If you have already installed Docker onto your local machine, you can use
     -b, --browser <browser>     Browser where the JavaScript code will be run (default: chrome)
     -c, --concurrency <number>  Number of ControlFlows to be run at the same time (default: 1)
     -l, --logging <filters>     Filters for the local logging of selenium-webdriver (default: '')
-    -s, --server <uri>          URI of a Selenium Server (default: http://localhost:4444/wd/hub)
+    -s, --server [uri]          Use a Selenium Server (default: false)
 ```
 
 When it is succeeded to execute the JavaScript code, `wd-runjs` outputs a JSON
@@ -52,7 +53,6 @@ Maximum depth of nested elements:
 
 ```
 $ cat examples/max-depth.js | wd-runjs https://github.com/
-
 [{"uri":"https://github.com/","browser":"chrome","result":12}]
 ```
 
@@ -60,7 +60,6 @@ Tag statistics:
 
 ```
 $ cat examples/tags.js | wd-runjs https://github.com/
-
 [{"uri":"https://github.com/","browser":"chrome","result":{"DD":3,"A":34,...}}]
 
 ```
@@ -70,7 +69,6 @@ By using [jq], it is possible to process a result JSON as follows:
 ```
 $ cat examples/tags.js | wd-runjs https://github.com/ | \
     jq '.[] | { uri, browser, countTags: [.result[]] | add }'
-
 {
   "uri": "https://github.com/",
   "browser": "chrome",
