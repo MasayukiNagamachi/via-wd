@@ -61,7 +61,6 @@ Tag statistics:
 ```
 $ cat examples/tags.js | wd-runjs https://github.com/
 [{"uri":"https://github.com/","browser":"chrome","result":{"DD":3,"A":34,...}}]
-
 ```
 
 By using [jq], it is possible to process a result JSON as follows:
