@@ -1,3 +1,16 @@
+## 1.2.0 (2017-06-03)
+
+* Support for ChromeDriver specific options
+* Add the title field to the result JSON
+
+## 1.1.0 (2017-06-02)
+
+* ChromeDriver and GeckoDriver supports
+
+## 1.0.1 (2017-06-02)
+
+* Update dependencies
+
 ## 1.0.0 (2017-01-06)
 
 * Navigation script
