@@ -42,6 +42,7 @@ array of the following format to stdout.
 {
   "uri": "<uri>",
   "browser": "<browser>",
+  "title": "<title>",
   "result": <result-json>
 }
 ```

@@ -95,7 +95,12 @@ class ScriptRunner {
           this.logger_.debug(`${uri}: start nativation...`);
           return this.navigate_(driver, uri);
         }))
+        .then(this.abortable_(() => {
+          this.logger_.debug(`${uri}: get the title...`);
+          return driver.getTitle();
+        }))
         .then(this.abortable_((title) => {
+          value.title = title;
           this.logger_.debug(`${uri}: run the script...`);
           return driver.executeScript(script);
         }))

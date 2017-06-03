@@ -124,6 +124,7 @@ describe('ScriptRunner', () => {
   beforeEach(() => {
     driverStub = webdriver.promise.Promise.resolve();
     driverStub.get = sinon.stub();
+    driverStub.getTitle = sinon.stub().returns('title');
     driverStub.executeScript = sinon.stub();
     driverStub.quit = sinon.stub();
 
@@ -205,9 +206,10 @@ describe('ScriptRunner', () => {
           .then(done);
       });
 
-      it('should set the result', (done) => {
+      it('should set the title and the result', (done) => {
         promise
           .then((results) => {
+            expect(results[0].title).to.exist;
             expect(results[0].result).to.exist;
             expect(results[0].error).to.not.exist;
           })
