@@ -20,7 +20,7 @@ If you have already installed Docker onto your local machine, you can use
 ## Usage
 
 ```
-  Usage: wd-runjs [options] <URI or path to a navigation script...>
+  Usage: wd-runjs [options] [URI, path to a navigation script or a window index starting with @ ...]
 
   Run JavaScript code on browsers by piping stdin via Selenium WebDriver
 
@@ -31,7 +31,8 @@ If you have already installed Docker onto your local machine, you can use
     -b, --browser <browser>       Browser where the JavaScript code will be run (default: chrome)
     -c, --concurrency <number>    Number of ControlFlows to be run at the same time (default: 1)
     -l, --logging <logger:level>  Filters for the local logging of selenium-webdriver (default: '')
-    -s, --server [uri]            Use a Selenium Server (default: false)
+    -o, --browser-options <json>  Browser specific options (default: [object Object])
+    -s, --server [uri]            Use a WebDriver server which is already running (default: false)
 ```
 
 When it is succeeded to execute the JavaScript code, `wd-runjs` outputs a JSON
@@ -135,6 +136,19 @@ $ wd-runjs -l :ALL https://github.com/
 
 At this time, [the remote logging](https://github.com/SeleniumHQ/selenium/wiki/Logging)
 is not supported.
+
+## Connecting to an existing browser
+
+Chrome running with `--remote-debugging-port=9222`:
+
+```
+$ wd-runjs -o '{"debuggerAddress": "localhost:9222"}'
+```
+
+The JavaScript code will be executed on the current tab/window of the existing
+Chrome browser.
+
+At the moment, this feature only works with the ChromeDriver.
 
 ## License
 

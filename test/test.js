@@ -127,10 +127,13 @@ describe('ScriptRunner', () => {
     driverStub.executeScript = sinon.stub();
     driverStub.quit = sinon.stub();
 
+    capsStub = new webdriver.Capabilities;
+
     builderStub = sinon.createStubInstance(webdriver.Builder);
     builderStub.forBrowser.returns(builderStub);
     builderStub.usingServer.returns(builderStub);
     builderStub.setControlFlow.returns(builderStub);
+    builderStub.getCapabilities.returns(capsStub);
     builderStub.build.returns(driverStub);
 
     sinon.stub(webdriver, 'Builder').returns(builderStub);
@@ -146,6 +149,7 @@ describe('ScriptRunner', () => {
     context('when multiple URIs are specified', () => {
       const options = {
         browser: 'browser',
+        browserOptioins: {},
         concurrency: 1,
         server: 'server',
         uris: ['uri:uri1', 'uri:uri2', 'uri:uri3', 'uri:uri4']
@@ -175,6 +179,7 @@ describe('ScriptRunner', () => {
     context('when driver.executeScript() returns a result', () => {
       const options = {
         browser: 'browser',
+        browserOptioins: {},
         concurrency: 1,
         server: 'server',
         uris: ['uri:uri']
@@ -213,6 +218,7 @@ describe('ScriptRunner', () => {
     context('when driver.executeScript() throws an error', () => {
       const options = {
         browser: 'browser',
+        browserOptioins: {},
         concurrency: 1,
         server: 'server',
         uris: ['uri:uri']
@@ -250,6 +256,7 @@ describe('ScriptRunner', () => {
     context('when driver.get() throws an error', () => {
       const options = {
         browser: 'browser',
+        browserOptioins: {},
         concurrency: 1,
         server: 'server',
         uris: ['uri:uri']
@@ -295,6 +302,7 @@ describe('ScriptRunner', () => {
     context('when a navigation script is used', () => {
       const options = {
         browser: 'browser',
+        browserOptioins: {},
         concurrency: 1,
         server: 'server',
         uris: [path.join(__dirname, 'navigation.js')]
@@ -334,11 +342,138 @@ describe('ScriptRunner', () => {
           .then(done);
       });
     });
+
+    context('when a window index is specified', () => {
+      const options = {
+        browser: 'browser',
+        browserOptioins: {},
+        concurrency: 1,
+        server: false,
+        uris: ['@current']
+      };
+
+      let promise;
+
+      beforeEach(() => {
+        promise = new ScriptRunner(options).run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should not call driver.get()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.get).to.have.not.been.called;
+          })
+          .then(done);
+      });
+
+      it('should call driver.executeScript()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.executeScript).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+
+      it('should call driver.quit()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.quit).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+    });
+
+    context('when an unsupported window index is specified', () => {
+      const options = {
+        browser: 'browser',
+        browserOptioins: {},
+        concurrency: 1,
+        server: false,
+        uris: ['@unsupported']
+      };
+
+      let promise;
+
+      beforeEach(() => {
+        promise = new ScriptRunner(options).run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should not call driver.executeScript()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.executeScript).to.have.not.been.calledOnce;
+          })
+          .then(done);
+      });
+
+      it('should call driver.quit()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.quit).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+
+      it('should set the error', (done) => {
+        promise
+          .then((results) => {
+            expect(results[0].result).to.not.exist;
+            expect(results[0].error).to.exist;
+          })
+          .then(done);
+      });
+    });
+
+    context('when the ChromeDriver is used with Chrome-specific options', () => {
+      const options = {
+        browser: 'chrome',
+        browserOptioins: {key: 'value'},
+        concurrency: 1,
+        server: false,
+        uris: ['@current']
+      };
+
+      let promise;
+
+      beforeEach(() => {
+        promise = new ScriptRunner(options).run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should set chromeOptions', (done) => {
+        promise
+          .then((results) => {
+            expect(capsStub).to.have.key('chromeOptions');
+            expect(capsStub['chromeOptions']).to.eql(options.browserOptions);
+          })
+          .then(done);
+      });
+
+      it('should call driver.quit()', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.quit).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+    });
   });
 
   describe('#abort', () => {
     const options = {
       browser: 'browser',
+      browserOptioins: {},
       concurrency: 1,
       server: 'server',
       uris: ['uri:uri1', 'uri:uri2']

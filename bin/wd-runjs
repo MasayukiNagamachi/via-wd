@@ -18,11 +18,12 @@ const DEFAULT_CONCURRENCY = 1;
 const DEFAULT_LOGGING = [];
 const DEFAULT_SERVER = false;
 const DEFAULT_SERVER_URI = 'http://localhost:4444/wd/hub';
+const DEFAULT_BROWSER_OPTIONS = {};
 
 program
   .version(require('../package.json').version)
   .description(require('../package.json').description)
-  .usage('[options] <URI or path to a navigation script...>')
+  .usage('[options] [URI, path to a navigation script or a window index starting with @ ...]')
   .option(
     '-b, --browser <browser>',
     `Browser where the JavaScript code will be run (default: ${DEFAULT_BROWSER})`,
@@ -43,8 +44,16 @@ program
     },
     DEFAULT_LOGGING)
   .option(
+    '-o, --browser-options <json>',
+    `Browser specific options (default: ${DEFAULT_BROWSER_OPTIONS})`,
+    (json, browserOptions) => {
+      const opt = JSON.parse(json);
+      return _.assign(browserOptions, opt);
+    },
+    DEFAULT_BROWSER_OPTIONS)
+  .option(
     '-s, --server [uri]',
-    `Use a Selenium Server (default: ${DEFAULT_SERVER})`,
+    `Use a WebDriver server which is already running (default: ${DEFAULT_SERVER})`,
     DEFAULT_SERVER)
   .parse(process.argv);
 
@@ -52,11 +61,6 @@ if (program.server) {
   if (program.server === true) {
     program.server = DEFAULT_SERVER_URI;
   }
-}
-
-if (program.args.length == 0) {
-  console.error('URI is required');
-  process.exit(1);
 }
 
 if (program.logging.length > 0) {
@@ -67,10 +71,15 @@ if (program.logging.length > 0) {
 
 const options = {
   browser: program.browser,
+  browserOptions: program.browserOptions,
   concurrency: program.concurrency,
   server: program.server,
   uris: program.args
 };
+
+if (_.isEmpty(options.uris.length)) {
+  options.uris = ['@current']
+}
 
 let script = '';
 process.stdin.on('data', (str) => script += str);

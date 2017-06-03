@@ -11,6 +11,7 @@ const moment = require('moment');
 const path = require('path');
 const url = require('url');
 const webdriver = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
 
 // Logging
 
@@ -85,6 +86,7 @@ class ScriptRunner {
     if (this.options_.server) {
       builder.usingServer(this.options_.server);
     }
+    this.setBrowserOptions_(builder);
     const promises = _.map(this.options_.uris, (uri) => {
       let value = { uri: uri, browser: this.options_.browser };
       const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();
@@ -93,8 +95,8 @@ class ScriptRunner {
           this.logger_.debug(`${uri}: start nativation...`);
           return this.navigate_(driver, uri);
         }))
-        .then(this.abortable_(() => {
-          this.logger_.debug(`${uri}: end navigation, then run the script...`);
+        .then(this.abortable_((title) => {
+          this.logger_.debug(`${uri}: run the script...`);
           return driver.executeScript(script);
         }))
         .then((result) => {
@@ -149,7 +151,25 @@ class ScriptRunner {
     });
   }
 
+  setBrowserOptions_(builder) {
+    // TODO: Support other browsers
+    const caps = builder.getCapabilities();
+    switch (this.options_.browser) {
+    case 'chrome':
+      caps.set('chromeOptions', this.options_.browserOptions);
+      break;
+    }
+  }
+
   navigate_(driver, uri) {
+    if (_.startsWith(uri, '@')) {
+      const tab = _.trimStart(uri, '@');
+      if (tab === 'current') {
+        this.logger_.debug(`${uri}: use the current tab/window`);
+        return driver;  // noop
+      }
+      throw new Error(`Unsupported window index: ${uri}`);
+    }
     const parsedUri = url.parse(uri);
     if (_.isEmpty(parsedUri.protocol)) {
       const navigation = require(path.resolve(uri));
