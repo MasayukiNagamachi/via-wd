@@ -26,12 +26,12 @@ If you have already installed Docker onto your local machine, you can use
 
   Options:
 
-    -h, --help                  output usage information
-    -V, --version               output the version number
-    -b, --browser <browser>     Browser where the JavaScript code will be run (default: chrome)
-    -c, --concurrency <number>  Number of ControlFlows to be run at the same time (default: 1)
-    -l, --logging <filters>     Filters for the local logging of selenium-webdriver (default: '')
-    -s, --server [uri]          Use a Selenium Server (default: false)
+    -h, --help                    output usage information
+    -V, --version                 output the version number
+    -b, --browser <browser>       Browser where the JavaScript code will be run (default: chrome)
+    -c, --concurrency <number>    Number of ControlFlows to be run at the same time (default: 1)
+    -l, --logging <logger:level>  Filters for the local logging of selenium-webdriver (default: '')
+    -s, --server [uri]            Use a Selenium Server (default: false)
 ```
 
 When it is succeeded to execute the JavaScript code, `wd-runjs` outputs a JSON
@@ -121,16 +121,16 @@ The following loggers are defined in wd-runjs.
 
 For available levels, see [selenium-webdriver's document](http://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/lib/logging_exports_Level.html).
 
-It is possible to specify multiple loggers and levels as follows:
+It is possible to specify multiple logging options as follows:
 
 ```
-$ wd-runjs -l 'wd-runjs:DEBUG,promise:FINER' https://github.com/
+$ wd-runjs -l wd-runjs:DEBUG -l promise:FINER https://github.com/
 ```
 
 For outputting all log messages, specify the logging option like below:
 
 ```
-$ wd-runjs -l ':ALL' https://github.com/
+$ wd-runjs -l :ALL https://github.com/
 ```
 
 At this time, [the remote logging](https://github.com/SeleniumHQ/selenium/wiki/Logging)

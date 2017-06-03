@@ -15,7 +15,7 @@ const logging = require('..').logging;
 
 const DEFAULT_BROWSER = 'chrome';
 const DEFAULT_CONCURRENCY = 1;
-const DEFAULT_LOGGING = '';
+const DEFAULT_LOGGING = [];
 const DEFAULT_SERVER = false;
 const DEFAULT_SERVER_URI = 'http://localhost:4444/wd/hub';
 
@@ -34,12 +34,13 @@ program
     (number) => parseInt(number),
     DEFAULT_CONCURRENCY)
   .option(
-    '-l, --logging <filters>',
+    '-l, --logging <logger:level>',
     `Filters for the local logging of selenium-webdriver (default: '${DEFAULT_LOGGING}')`,
-    (filters) => _(filters)
-      .split(/\s*,\s*/)
-      .map((filter) => _.zipObject(['logger', 'level'], _.split(filter, ':')))
-      .value(),
+    (filter, filters) => {
+      const [logger, level] = _.split(filter, ':', 2);
+      filters.push({logger: logger, level, level});
+      return filters;
+    },
     DEFAULT_LOGGING)
   .option(
     '-s, --server [uri]',
