@@ -1,3 +1,7 @@
+## Next Release
+
+* Replace npm-shrinkwrap.json with package-lock.json
+
 ## 1.2.0 (2017-06-03)
 
 * Support for ChromeDriver specific options
