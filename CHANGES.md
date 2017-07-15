@@ -1,6 +1,8 @@
 ## Next Release
 
 * Replace npm-shrinkwrap.json with package-lock.json
+* Update Node.js version to 6.11.1
+* Update packages
 
 ## 1.2.0 (2017-06-03)
 
