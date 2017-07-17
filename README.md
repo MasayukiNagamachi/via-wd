@@ -24,15 +24,18 @@ If you have already installed Docker onto your local machine, you can use
 
   Run JavaScript code on browsers by piping stdin via Selenium WebDriver
 
+
   Options:
 
-    -h, --help                    output usage information
-    -V, --version                 output the version number
-    -b, --browser <browser>       Browser where the JavaScript code will be run (default: chrome)
-    -c, --concurrency <number>    Number of ControlFlows to be run at the same time (default: 1)
-    -l, --logging <logger:level>  Filters for the local logging of selenium-webdriver (default: '')
-    -o, --browser-options <json>  Browser specific options (default: [object Object])
-    -s, --server [uri]            Use a WebDriver server which is already running (default: false)
+    -V, --version                      output the version number
+    -a, --async                        Run the Javascript code asynchronously
+    -b, --browser <chrome or firefox>  Browser where the JavaScript code will be run (default: chrome)
+    -c, --concurrency <number>         Number of ControlFlows to be run at the same time (default: 1)
+    -l, --logging <logger:level>       Filters for the local logging of selenium-webdriver (default: [])
+    -o, --browser-options <json>       Browser specific options (default: {})
+    -s, --server [uri]                 Use a WebDriver server which is already running (default: false)
+    --script-timeout <sec>             Asynchronous script execution time limit in seconds (default: 10)
+    -h, --help                         output usage information
 ```
 
 When it is succeeded to execute the JavaScript code, `wd-runjs` outputs a JSON
@@ -55,14 +58,14 @@ Maximum depth of nested elements:
 
 ```
 $ cat examples/max-depth.js | wd-runjs https://github.com/
-[{"uri":"https://github.com/","browser":"chrome","result":12}]
+[{"uri":"https://github.com/","browser":"chrome","title":"...","result":12}]
 ```
 
 Tag statistics:
 
 ```
 $ cat examples/tags.js | wd-runjs https://github.com/
-[{"uri":"https://github.com/","browser":"chrome","result":{"DD":3,"A":34,...}}]
+[{"uri":"https://github.com/","browser":"chrome","title":"...","result":{"DD":3,"A":34,...}}]
 ```
 
 By using [jq], it is possible to process a result JSON as follows:
@@ -73,7 +76,7 @@ $ cat examples/tags.js | wd-runjs https://github.com/ | \
 {
   "uri": "https://github.com/",
   "browser": "chrome",
-  "countTags": 257
+  "countTags": 496
 }
 ```
 
@@ -107,6 +110,19 @@ module.exports.navigate = (driver) => {
 
 By using the navigation script, it is possible to run a script on web pages
 where the user authentication is required.
+
+Run Javascript code asynchronously:
+
+```
+$ browserify examples/html2canvas.js | \
+    wd-runjs --a https://www.google.com/ | \
+    jq -r '.[] | .result' | xsel --clipboard
+```
+
+`data:image/png;base64,...` is copied to the clipboard.
+
+Before running the above command, it's necessary to install [Browserify],
+[jQuery] and [html2canvas].
 
 ## Logging
 
@@ -167,3 +183,6 @@ file for details.
 [Selenium WebDriver]: https://www.npmjs.com/package/selenium-webdriver
 [jq]: https://stedolan.github.io/jq/
 [masnagam/docker-compose-collection]: https://github.com/masnagam/docker-compose-collection/tree/master/selenium-grid
+[Browserify]: http://browserify.org/
+[jQuery]: http://jquery.com/
+[html2canvas]: http://html2canvas.hertzen.com/

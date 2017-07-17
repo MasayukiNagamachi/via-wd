@@ -1,6 +1,3 @@
-//
-// Copyright (c) 2016 Masayuki Nagamachi <masayuki.nagamachi@gmail.com>
-//
 // This file is distributed under the MIT license.
 // See LICENSE file in the project root for details.
 
@@ -79,8 +76,12 @@ class ScriptRunner {
     this.logger_.debug(JSON.stringify(options));
   }
 
-  run(script) {
-    this.logger_.debug(`<<EOS\n${script}EOS`);
+  run(code) {
+    const STARTUP = [
+      'const ARGS = arguments;'
+    ];
+
+    this.logger_.debug(`<<EOS\n${code}EOS`);
     const builder = new webdriver.Builder()
       .forBrowser(this.options_.browser);
     if (this.options_.server) {
@@ -90,6 +91,10 @@ class ScriptRunner {
     const promises = _.map(this.options_.uris, (uri) => {
       let value = { uri: uri, browser: this.options_.browser };
       const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();
+      if (this.options_.async) {
+        driver.manage().timeouts().setScriptTimeout(
+          this.options_.scriptTimeout * 1000);
+      }
       return driver
         .then(this.abortable_(() => {
           this.logger_.debug(`${uri}: start nativation...`);
@@ -101,8 +106,14 @@ class ScriptRunner {
         }))
         .then(this.abortable_((title) => {
           value.title = title;
-          this.logger_.debug(`${uri}: run the script...`);
-          return driver.executeScript(script);
+          const script = _(STARTUP).concat(code).join('\n');
+          if (this.options_.async) {
+            this.logger_.debug(`${uri}: run the script asynchronously...`);
+            return driver.executeAsyncScript(script);
+          } else {
+            this.logger_.debug(`${uri}: run the script synchronously...`);
+            return driver.executeScript(script);
+          }
         }))
         .then((result) => {
           this.logger_.debug(`${uri}: done`);

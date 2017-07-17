@@ -2,6 +2,7 @@
 
 * Replace npm-shrinkwrap.json with package-lock.json
 * Update packages
+* Support the asynchronous script execution
 
 ## 1.2.0 (2017-06-03)
 

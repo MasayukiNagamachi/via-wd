@@ -1,8 +1,7 @@
-//
-// Copyright (c) 2016 Masayuki Nagamachi <masayuki.nagamachi@gmail.com>
-//
 // This file is distributed under the MIT license.
 // See LICENSE file in the project root for details.
+
+'use strict';
 
 const _ = require('lodash');
 const chai = require('chai');
@@ -119,13 +118,21 @@ describe('FlowPool', () => {
 describe('ScriptRunner', () => {
   const ScriptRunner = require('..').ScriptRunner;
 
-  let driverStub, builderStub;
+  let timeoutsStub, optionsStub, driverStub, capsStub, builderStub;
 
   beforeEach(() => {
+    timeoutsStub = {};
+    timeoutsStub.setScriptTimeout = sinon.stub();
+
+    optionsStub = {};
+    optionsStub.timeouts = sinon.stub().returns(timeoutsStub);
+
     driverStub = webdriver.promise.Promise.resolve();
     driverStub.get = sinon.stub();
     driverStub.getTitle = sinon.stub().returns('title');
     driverStub.executeScript = sinon.stub();
+    driverStub.executeAsyncScript = sinon.stub();
+    driverStub.manage = sinon.stub().returns(optionsStub);
     driverStub.quit = sinon.stub();
 
     capsStub = new webdriver.Capabilities;
@@ -143,15 +150,20 @@ describe('ScriptRunner', () => {
   afterEach(() => {
     webdriver.Builder.restore();
     builderStub = null;
+    capsStub = null;
     driverStub = null;
+    optionsStub = null;
+    timeoutsStub = null;
   });
 
   describe('#run', () => {
     context('when multiple URIs are specified', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri1', 'uri:uri2', 'uri:uri3', 'uri:uri4']
       };
@@ -179,9 +191,11 @@ describe('ScriptRunner', () => {
 
     context('when driver.executeScript() returns a result', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
       };
@@ -219,9 +233,11 @@ describe('ScriptRunner', () => {
 
     context('when driver.executeScript() throws an error', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
       };
@@ -257,9 +273,11 @@ describe('ScriptRunner', () => {
 
     context('when driver.get() throws an error', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
       };
@@ -303,9 +321,11 @@ describe('ScriptRunner', () => {
 
     context('when a navigation script is used', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: 'server',
         uris: [path.join(__dirname, 'navigation.js')]
       };
@@ -347,9 +367,11 @@ describe('ScriptRunner', () => {
 
     context('when a window index is specified', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: false,
         uris: ['@current']
       };
@@ -391,9 +413,11 @@ describe('ScriptRunner', () => {
 
     context('when an unsupported window index is specified', () => {
       const options = {
+        async: false,
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptTimeout: 10,
         server: false,
         uris: ['@unsupported']
       };
@@ -436,9 +460,11 @@ describe('ScriptRunner', () => {
 
     context('when the ChromeDriver is used with Chrome-specific options', () => {
       const options = {
+        async: false,
         browser: 'chrome',
         browserOptioins: {key: 'value'},
         concurrency: 1,
+        scriptTimeout: 10,
         server: false,
         uris: ['@current']
       };
@@ -470,13 +496,57 @@ describe('ScriptRunner', () => {
           .then(done);
       });
     });
+
+    context('when the async option is specifed', () => {
+      const options = {
+        async: true,
+        browser: 'browser',
+        browserOptioins: {},
+        concurrency: 1,
+        scriptTimeout: 10,
+        server: 'server',
+        uris: ['uri:uri']
+      };
+
+      let promise;
+
+      beforeEach(() => {
+        driverStub.executeAsyncScript
+          .returns(webdriver.promise.Promise.resolve(1));
+        promise = new ScriptRunner(options).run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should call setScriptTimeout', (done) => {
+        promise
+          .then((results) => {
+            expect(timeoutsStub.setScriptTimeout).to.have.been.calledOnce;
+            expect(timeoutsStub.setScriptTimeout)
+              .to.have.been.calledWith(options.scriptTimeout * 1000);
+          })
+          .then(done);
+      });
+
+      it('should call executeAsyncScript', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.executeAsyncScript).to.have.been.calledOnce;
+          })
+          .then(done);
+      });
+    });
   });
 
   describe('#abort', () => {
     const options = {
+      async: false,
       browser: 'browser',
       browserOptioins: {},
       concurrency: 1,
+      scriptTimeout: 10,
       server: 'server',
       uris: ['uri:uri1', 'uri:uri2']
     };

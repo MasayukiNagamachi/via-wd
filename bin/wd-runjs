@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-//
-// Copyright (c) 2016 Masayuki Nagamachi <masayuki.nagamachi@gmail.com>
-//
+
 // This file is distributed under the MIT license.
 // See LICENSE file in the project root for details.
 
@@ -19,13 +17,28 @@ const DEFAULT_LOGGING = [];
 const DEFAULT_SERVER = false;
 const DEFAULT_SERVER_URI = 'http://localhost:4444/wd/hub';
 const DEFAULT_BROWSER_OPTIONS = {};
+const DEFAULT_SCRIPT_TIMEOUT = 10;
+
+function parseOptionLogFilter(filter, filters) {
+  const [logger, level] = _.split(filter, ':', 2);
+  filters.push({logger: logger, level, level});
+  return filters;
+}
+
+function parseOptionJSON(json, options) {
+  const v = JSON.parse(json);
+  return _.assign(options, v);
+}
 
 program
   .version(require('../package.json').version)
   .description(require('../package.json').description)
   .usage('[options] [URI, path to a navigation script or a window index starting with @ ...]')
   .option(
-    '-b, --browser <browser>',
+    '-a, --async',
+    'Run the Javascript code asynchronously')
+  .option(
+    '-b, --browser <chrome or firefox>',
     `Browser where the JavaScript code will be run (default: ${DEFAULT_BROWSER})`,
     /^(chrome|firefox)$/,
     DEFAULT_BROWSER)
@@ -36,25 +49,23 @@ program
     DEFAULT_CONCURRENCY)
   .option(
     '-l, --logging <logger:level>',
-    `Filters for the local logging of selenium-webdriver (default: '${DEFAULT_LOGGING}')`,
-    (filter, filters) => {
-      const [logger, level] = _.split(filter, ':', 2);
-      filters.push({logger: logger, level, level});
-      return filters;
-    },
+    `Filters for the local logging of selenium-webdriver (default: ${JSON.stringify(DEFAULT_LOGGING)})`,
+    parseOptionLogFilter,
     DEFAULT_LOGGING)
   .option(
     '-o, --browser-options <json>',
-    `Browser specific options (default: ${DEFAULT_BROWSER_OPTIONS})`,
-    (json, browserOptions) => {
-      const opt = JSON.parse(json);
-      return _.assign(browserOptions, opt);
-    },
+    `Browser specific options (default: ${JSON.stringify(DEFAULT_BROWSER_OPTIONS)})`,
+    parseOptionJSON,
     DEFAULT_BROWSER_OPTIONS)
   .option(
     '-s, --server [uri]',
     `Use a WebDriver server which is already running (default: ${DEFAULT_SERVER})`,
     DEFAULT_SERVER)
+  .option(
+    '--script-timeout <sec>',
+    `Asynchronous script execution time limit in seconds (default: ${DEFAULT_SCRIPT_TIMEOUT})`,
+    parseInt,
+    DEFAULT_SCRIPT_TIMEOUT)
   .parse(process.argv);
 
 if (program.server) {
@@ -70,14 +81,16 @@ if (program.logging.length > 0) {
 }
 
 const options = {
+  async: program.async,
   browser: program.browser,
   browserOptions: program.browserOptions,
   concurrency: program.concurrency,
+  scriptTimeout: program.scriptTimeout,
   server: program.server,
   uris: program.args
 };
 
-if (_.isEmpty(options.uris.length)) {
+if (_.isEmpty(options.uris)) {
   options.uris = ['@current']
 }
 
