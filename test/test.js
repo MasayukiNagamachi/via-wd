@@ -22,7 +22,7 @@ describe('logging', () => {
 
     beforeEach(() => {
       logger = sinon.createStubInstance(webdriver.logging.Logger);
-      sinon.stub(webdriver.logging, 'getLogger', (name) => {
+      sinon.stub(webdriver.logging, 'getLogger').callsFake((name) => {
         return logger;
       });
     });
