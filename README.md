@@ -120,8 +120,6 @@ $ browserify examples/html2canvas.js | \
 [{"uri":"https://www.w3.org/","browser":"chrome","title":"...","result":["data:image/png;base64,...",...]}]
 ```
 
-`data:image/png;base64,...` is copied to the clipboard.
-
 Before running the above command, it's necessary to install [Browserify],
 [jQuery] and [html2canvas].
 
