@@ -28,12 +28,13 @@ If you have already installed Docker onto your local machine, you can use
   Options:
 
     -V, --version                      output the version number
-    -a, --async                        Run the Javascript code asynchronously
+    -a, --script-args <arg>            Arguments passed to the Javascript code (default: [])
     -b, --browser <chrome or firefox>  Browser where the JavaScript code will be run (default: chrome)
     -c, --concurrency <number>         Number of ControlFlows to be run at the same time (default: 1)
     -l, --logging <logger:level>       Filters for the local logging of selenium-webdriver (default: [])
     -o, --browser-options <json>       Browser specific options (default: {})
     -s, --server [uri]                 Use a WebDriver server which is already running (default: false)
+    --async                            Run the Javascript code asynchronously
     --script-timeout <sec>             Asynchronous script execution time limit in seconds (default: 10)
     -h, --help                         output usage information
 ```
@@ -115,8 +116,8 @@ Run Javascript code asynchronously:
 
 ```
 $ browserify examples/html2canvas.js | \
-    wd-runjs --a https://www.google.com/ | \
-    jq -r '.[] | .result' | xsel --clipboard
+    wd-runjs --async -a li.vevent https://www.w3.org/
+[{"uri":"https://www.w3.org/","browser":"chrome","title":"...","result":["data:image/png;base64,...",...]}]
 ```
 
 `data:image/png;base64,...` is copied to the clipboard.

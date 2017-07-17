@@ -6,9 +6,15 @@
 const $ = require('jquery');
 const html2canvas = require('html2canvas');
 
+if (ARGS.length < 2) {
+  throw new Error('Selector is required');
+}
+
+const selector = ARGS[0];
 const callback = ARGS[ARGS.length - 1];
 
-html2canvas($(document.body))
-  .then((canvas) => {
-    callback(canvas.toDataURL("image/png"));
-  });
+Promise.all($(selector).map(function() {
+  return html2canvas(this)
+    .then((canvas) => canvas.toDataURL('image/png'));
+}))
+  .then(callback);

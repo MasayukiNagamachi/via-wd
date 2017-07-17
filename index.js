@@ -109,10 +109,11 @@ class ScriptRunner {
           const script = _(STARTUP).concat(code).join('\n');
           if (this.options_.async) {
             this.logger_.debug(`${uri}: run the script asynchronously...`);
-            return driver.executeAsyncScript(script);
+            return driver.executeAsyncScript(
+              script, ...this.options_.scriptArgs);
           } else {
             this.logger_.debug(`${uri}: run the script synchronously...`);
-            return driver.executeScript(script);
+            return driver.executeScript(script, ...this.options_.scriptArgs);
           }
         }))
         .then((result) => {

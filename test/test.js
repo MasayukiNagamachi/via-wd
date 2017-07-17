@@ -163,6 +163,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri1', 'uri:uri2', 'uri:uri3', 'uri:uri4']
@@ -195,6 +196,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
@@ -237,6 +239,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
@@ -277,6 +280,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
@@ -325,6 +329,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
         uris: [path.join(__dirname, 'navigation.js')]
@@ -371,6 +376,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: false,
         uris: ['@current']
@@ -417,6 +423,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: false,
         uris: ['@unsupported']
@@ -464,6 +471,7 @@ describe('ScriptRunner', () => {
         browser: 'chrome',
         browserOptioins: {key: 'value'},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: false,
         uris: ['@current']
@@ -503,6 +511,7 @@ describe('ScriptRunner', () => {
         browser: 'browser',
         browserOptioins: {},
         concurrency: 1,
+        scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
         uris: ['uri:uri']
@@ -538,6 +547,41 @@ describe('ScriptRunner', () => {
           .then(done);
       });
     });
+
+    context('when scrint arguments are specifed', () => {
+      const options = {
+        async: false,
+        browser: 'browser',
+        browserOptioins: {},
+        concurrency: 1,
+        scriptArgs: [1, 2],
+        scriptTimeout: 10,
+        server: 'server',
+        uris: ['uri:uri']
+      };
+
+      let promise;
+
+      beforeEach(() => {
+        driverStub.executeAsyncScript
+          .returns(webdriver.promise.Promise.resolve(1));
+        promise = new ScriptRunner(options).run('script');
+      });
+
+      afterEach(() => {
+        promise = null;
+      });
+
+      it('should call setScriptTimeout with the script arguments', (done) => {
+        promise
+          .then((results) => {
+            expect(driverStub.executeScript).to.have.been.calledOnce;
+            expect(driverStub.executeScript).to.have.been.calledWith(
+              'const ARGS = arguments;\nscript', ...options.scriptArgs);
+          })
+          .then(done);
+      });
+    });
   });
 
   describe('#abort', () => {
@@ -546,6 +590,7 @@ describe('ScriptRunner', () => {
       browser: 'browser',
       browserOptioins: {},
       concurrency: 1,
+      scriptArgs: [],
       scriptTimeout: 10,
       server: 'server',
       uris: ['uri:uri1', 'uri:uri2']
