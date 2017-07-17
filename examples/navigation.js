@@ -11,7 +11,9 @@ const logger = webdriver.logging.getLogger('wd-runjs.navigation');
 module.exports.navigate = (driver) => {
   logger.debug('searching "webdriver" with Google...');
   driver.get('http://www.google.com/ncr');
-  driver.findElement(webdriver.By.name('q')).sendKeys('webdriver');
-  driver.findElement(webdriver.By.name('btnG')).click();
+  driver.wait(webdriver.until.elementLocated(webdriver.By.name('q')), 1000)
+    .sendKeys('webdriver');
+  driver.wait(webdriver.until.elementLocated(webdriver.By.name('btnG')), 1000)
+    .click();
   driver.wait(webdriver.until.titleIs('webdriver - Google Search'), 1000);
 };
