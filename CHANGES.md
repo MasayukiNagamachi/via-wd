@@ -1,5 +1,7 @@
 ## Next Release
 
+## 1.3.0 (2017-07-17)
+
 * Replace npm-shrinkwrap.json with package-lock.json
 * Update packages
 * Support the asynchronous script execution
