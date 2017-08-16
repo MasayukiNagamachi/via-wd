@@ -41,7 +41,7 @@ program
   .usage('[options] [URI, path to a navigation script or a window index starting with @ ...]')
   .option(
     '-a, --script-args <arg>',
-    `Arguments passed to the Javascript code (default: ${JSON.stringify(DEFAULT_ARGS)})`,
+    `Arguments passed to the JavaScript code (default: ${JSON.stringify(DEFAULT_ARGS)})`,
     parseOptionArg,
     DEFAULT_ARGS)
   .option(
@@ -70,7 +70,7 @@ program
     DEFAULT_SERVER)
   .option(
     '--async',
-    'Run the Javascript code asynchronously')
+    'Run the JavaScript code asynchronously')
   .option(
     '--script-timeout <sec>',
     `Asynchronous script execution time limit in seconds (default: ${DEFAULT_SCRIPT_TIMEOUT})`,

@@ -28,13 +28,13 @@ If you have already installed Docker onto your local machine, you can use
   Options:
 
     -V, --version                      output the version number
-    -a, --script-args <arg>            Arguments passed to the Javascript code (default: [])
+    -a, --script-args <arg>            Arguments passed to the JavaScript code (default: [])
     -b, --browser <chrome or firefox>  Browser where the JavaScript code will be run (default: chrome)
     -c, --concurrency <number>         Number of ControlFlows to be run at the same time (default: 1)
     -l, --logging <logger:level>       Filters for the local logging of selenium-webdriver (default: [])
     -o, --browser-options <json>       Browser specific options (default: {})
     -s, --server [uri]                 Use a WebDriver server which is already running (default: false)
-    --async                            Run the Javascript code asynchronously
+    --async                            Run the JavaScript code asynchronously
     --script-timeout <sec>             Asynchronous script execution time limit in seconds (default: 10)
     -h, --help                         output usage information
 ```
@@ -112,7 +112,7 @@ module.exports.navigate = (driver) => {
 By using the navigation script, it is possible to run a script on web pages
 where the user authentication is required.
 
-Run Javascript code asynchronously:
+Run JavaScript code asynchronously:
 
 ```
 $ browserify examples/html2canvas.js | \
@@ -120,7 +120,7 @@ $ browserify examples/html2canvas.js | \
 [{"uri":"https://www.w3.org/","browser":"chrome","title":"...","result":["data:image/png;base64,...",...]}]
 ```
 
-Before running the above command, it's necessary to install [Browserify],
+Before running the above command, it is necessary to install [Browserify],
 [jQuery] and [html2canvas].
 
 ## Logging
@@ -153,18 +153,16 @@ $ wd-runjs -l :ALL https://github.com/
 At this time, [the remote logging](https://github.com/SeleniumHQ/selenium/wiki/Logging)
 is not supported.
 
-## Connecting to an existing browser
+## Running JavaScript code on an existing browser window
 
-Chrome running with `--remote-debugging-port=9222`:
+At the moment, this feature works only with the ChromeDriver.
 
 ```
-$ wd-runjs -o '{"debuggerAddress": "localhost:9222"}'
+$ cat script.js | wd-runjs -o '{"debuggerAddress": "localhost:9222"}'
 ```
 
 The JavaScript code will be executed on the current tab/window of the existing
-Chrome browser.
-
-At the moment, this feature only works with the ChromeDriver.
+Chrome browser launched with `--remote-debugging-port=9222`.
 
 ## License
 
