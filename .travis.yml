@@ -3,5 +3,22 @@ language: node_js
 node_js:
   - "6"
 
+env:
+  global:
+    secure: "X9QfTGG5nrEuTnOxJEpL04vKyaeSFDyfhzZ8nVcr0rVSfEVcBnXf/v1RLQMZiFz366Zk/yniq2v0QB0aBxyw/5pypXdKy5XAczo5CTrgyLW30gsDi4GBnlttC2tDzOo7RwuIOmxwYXeRdt2rxhsPcOCtw7kaaEfHXzBwJlHwNGXpes++veqHfHMXNRhjBRe0CkpldRqlOF+NEQhoVa1zDF8Ox19KRXsb0da+CBTW1w03RDAydrFYA6sz2NAXj/mN6lUNIDrDWvWY+H7crdc7nFcJkgd42EVo9KXurw40nfvm7SbXYMluNnUZgURmY2bdx8JSBAKbx6gEAsWIDqWce+MVp5ciRrDtD4961nJvO4NJkGDs+O40WkbXt/ZYHAWFhepI87hZIxTvzKc5YRLSip4CbtdTX5t7lHghM159uLjrvkFdHrHw/3/rGCwnX/zusaF09Pnp4u80BkvhU4qdesQsIsJcMd2aMH6M0p+V2/kmDHypAjDgTc+Qq5sBiGCNpdctFNI2kBST6M84NnCdsaThFMpGWkN1bLtrBlNiYEvw0JLoV+MHafYnXqgkK65ZBoUYQJVyK5NoXi6zk3xxT3Oq3+Q5mOy5kY5VpsqPVS+i+1S/3YKsESLaaArtkEtmTeG1QKh4/koGAUkNXot4edNTLJSs1KII+/O7I1ElPqw="
+
+addons:
+  coverity_scan:
+    project:
+      name: "masnagam/wd-runjs"
+      description: "Build submitted via Travis CI"
+    notification_email: masayuki.nagamachi@gmail.com
+    build_command_prepend: ""
+    build_command: ""
+    branch_pattern: "*"
+
+before_install:
+  - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
