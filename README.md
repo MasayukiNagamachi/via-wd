@@ -4,6 +4,7 @@
 [![Build Status][build-status]][build-site]
 [![Coverage Status][coverage-status]][coverage-site]
 [![Dependency Status][dependency-status]][dependency-site]
+[![Coverity Scan Status][coverity-scan-status]][coverity-scan-site]
 
 `wd-runjs` is a tiny command which runs JavaScript code on browsers by piping
 stdin via [Selenium WebDriver].
@@ -173,6 +174,8 @@ file for details.
 [build-site]: https://travis-ci.org/masnagam/wd-runjs
 [coverage-status]: https://codecov.io/gh/masnagam/wd-runjs/branch/master/graph/badge.svg
 [coverage-site]: https://codecov.io/gh/masnagam/wd-runjs
+[coverity-scan-status]: https://scan.coverity.com/projects/13259/badge.svg
+[coverity-scan-site]: https://scan.coverity.com/projects/masnagam-wd-runjs
 [dependency-status]: https://gemnasium.com/badges/github.com/masnagam/wd-runjs.svg
 [dependency-site]: https://gemnasium.com/github.com/masnagam/wd-runjs
 [npm-version]: https://img.shields.io/npm/v/wd-runjs.svg
