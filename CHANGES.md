@@ -1,5 +1,7 @@
 ## Next Release
 
+* Update selenium-webdriver to 3.6.0
+
 ## 1.3.0 (2017-07-17)
 
 * Replace npm-shrinkwrap.json with package-lock.json

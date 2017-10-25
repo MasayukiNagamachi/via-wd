@@ -490,8 +490,8 @@ describe('ScriptRunner', () => {
       it('should set chromeOptions', (done) => {
         promise
           .then((results) => {
-            expect(capsStub).to.have.key('chromeOptions');
-            expect(capsStub['chromeOptions']).to.eql(options.browserOptions);
+            expect(capsStub.has('chromeOptions')).to.be.true;
+            expect(capsStub.get('chromeOptions')).to.eql(options.browserOptions);
           })
           .then(done);
       });
