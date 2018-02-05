@@ -18,8 +18,5 @@ addons:
     build_command: "--no-command --fs-capture-search $TRAVIS_BUILD_DIR"
     branch_pattern: "*"
 
-before_install:
-  - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
-
 after_success:
   - bash <(curl -s https://codecov.io/bash)
