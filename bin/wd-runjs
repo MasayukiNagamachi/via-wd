@@ -13,7 +13,6 @@ const logging = require('..').logging;
 
 const DEFAULT_ARGS = [];
 const DEFAULT_BROWSER = 'chrome';
-const DEFAULT_CONCURRENCY = 1;
 const DEFAULT_LOGGING = [];
 const DEFAULT_SERVER = false;
 const DEFAULT_SERVER_URI = 'http://localhost:4444/wd/hub';
@@ -41,39 +40,34 @@ program
   .usage('[options] [URI, path to a navigation script or a window index starting with @ ...]')
   .option(
     '-a, --script-args <arg>',
-    `Arguments passed to the JavaScript code (default: ${JSON.stringify(DEFAULT_ARGS)})`,
+    'Arguments passed to the JavaScript code',
     parseOptionArg,
     DEFAULT_ARGS)
   .option(
     '-b, --browser <chrome or firefox>',
-    `Browser where the JavaScript code will be run (default: ${DEFAULT_BROWSER})`,
+    'Browser where the JavaScript code will be run',
     /^(chrome|firefox)$/,
     DEFAULT_BROWSER)
   .option(
-    '-c, --concurrency <number>',
-    `Number of ControlFlows to be run at the same time (default: ${DEFAULT_CONCURRENCY})`,
-    (number) => parseInt(number),
-    DEFAULT_CONCURRENCY)
-  .option(
     '-l, --logging <logger:level>',
-    `Filters for the local logging of selenium-webdriver (default: ${JSON.stringify(DEFAULT_LOGGING)})`,
+    'Filters for the local logging of selenium-webdriver',
     parseOptionLogFilter,
     DEFAULT_LOGGING)
   .option(
     '-o, --browser-options <json>',
-    `Browser specific options (default: ${JSON.stringify(DEFAULT_BROWSER_OPTIONS)})`,
+    'Browser specific options',
     parseOptionJSON,
     DEFAULT_BROWSER_OPTIONS)
   .option(
     '-s, --server [uri]',
-    `Use a WebDriver server which is already running (default: ${DEFAULT_SERVER})`,
+    'Use a WebDriver server which is already running',
     DEFAULT_SERVER)
   .option(
     '--async',
     'Run the JavaScript code asynchronously')
   .option(
     '--script-timeout <sec>',
-    `Asynchronous script execution time limit in seconds (default: ${DEFAULT_SCRIPT_TIMEOUT})`,
+    'Asynchronous script execution time limit in seconds',
     parseInt,
     DEFAULT_SCRIPT_TIMEOUT)
   .parse(process.argv);
@@ -94,7 +88,6 @@ const options = {
   async: program.async,
   browser: program.browser,
   browserOptions: program.browserOptions,
-  concurrency: program.concurrency,
   scriptArgs: program.scriptArgs,
   scriptTimeout: program.scriptTimeout,
   server: program.server,

@@ -84,50 +84,16 @@ describe('logging', () => {
   });
 });
 
-describe('FlowPool', () => {
-  const FlowPool = require('..').FlowPool;
-
-  beforeEach(() => {
-    sinon.stub(webdriver.promise, 'ControlFlow');
-  });
-
-  afterEach(() => {
-    webdriver.promise.ControlFlow.restore();
-  });
-
-  describe('#constructor', () => {
-    it('should create ControlFlows as many as the number of cuncurrency ', () => {
-      new FlowPool(10);
-      expect(webdriver.promise.ControlFlow).to.have.callCount(10);
-    });
-  });
-
-  describe('#getFlow', () => {
-    it('should return objects cyclically', () => {
-      const flowPool = new FlowPool(2);
-      const flow1 = flowPool.getFlow();
-      const flow2 = flowPool.getFlow();
-      expect(flowPool.getFlow()).to.equal(flow1);
-      expect(flowPool.getFlow()).to.equal(flow2);
-      expect(flowPool.getFlow()).to.equal(flow1);
-      expect(flowPool.getFlow()).to.equal(flow2);
-    });
-  });
-});
-
 describe('ScriptRunner', () => {
   const ScriptRunner = require('..').ScriptRunner;
 
   let timeoutsStub, optionsStub, driverStub, capsStub, builderStub;
 
   beforeEach(() => {
-    timeoutsStub = {};
-    timeoutsStub.setScriptTimeout = sinon.stub();
-
     optionsStub = {};
-    optionsStub.timeouts = sinon.stub().returns(timeoutsStub);
+    optionsStub.setTimeouts = sinon.stub();
 
-    driverStub = webdriver.promise.Promise.resolve();
+    driverStub = Promise.resolve();
     driverStub.get = sinon.stub();
     driverStub.getTitle = sinon.stub().returns('title');
     driverStub.executeScript = sinon.stub();
@@ -140,7 +106,6 @@ describe('ScriptRunner', () => {
     builderStub = sinon.createStubInstance(webdriver.Builder);
     builderStub.forBrowser.returns(builderStub);
     builderStub.usingServer.returns(builderStub);
-    builderStub.setControlFlow.returns(builderStub);
     builderStub.getCapabilities.returns(capsStub);
     builderStub.build.returns(driverStub);
 
@@ -162,7 +127,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
@@ -172,8 +136,7 @@ describe('ScriptRunner', () => {
       let promise;
 
       beforeEach(() => {
-        driverStub.executeScript
-          .returns(webdriver.promise.Promise.resolve(1));
+        driverStub.executeScript.returns(Promise.resolve(1));
         promise = new ScriptRunner(options).run('script');
       });
 
@@ -195,7 +158,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
@@ -206,7 +168,7 @@ describe('ScriptRunner', () => {
 
       beforeEach(() => {
         driverStub.executeScript
-          .returns(webdriver.promise.Promise.resolve(1));
+          .returns(Promise.resolve(1));
         promise = new ScriptRunner(options).run('script');
       });
 
@@ -238,7 +200,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
@@ -279,7 +240,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
@@ -328,7 +288,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
@@ -375,7 +334,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: false,
@@ -422,7 +380,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: false,
@@ -470,7 +427,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'chrome',
         browserOptioins: {key: 'value'},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: false,
@@ -510,7 +466,6 @@ describe('ScriptRunner', () => {
         async: true,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [],
         scriptTimeout: 10,
         server: 'server',
@@ -521,7 +476,7 @@ describe('ScriptRunner', () => {
 
       beforeEach(() => {
         driverStub.executeAsyncScript
-          .returns(webdriver.promise.Promise.resolve(1));
+          .returns(Promise.resolve(1));
         promise = new ScriptRunner(options).run('script');
       });
 
@@ -529,12 +484,14 @@ describe('ScriptRunner', () => {
         promise = null;
       });
 
-      it('should call setScriptTimeout', (done) => {
+      it('should call setTimeouts', (done) => {
         promise
           .then((results) => {
-            expect(timeoutsStub.setScriptTimeout).to.have.been.calledOnce;
-            expect(timeoutsStub.setScriptTimeout)
-              .to.have.been.calledWith(options.scriptTimeout * 1000);
+            expect(optionsStub.setTimeouts).to.have.been.calledOnce;
+            expect(optionsStub.setTimeouts)
+              .to.have.been.calledWith({
+                script: options.scriptTimeout * 1000
+              });
           })
           .then(done);
       });
@@ -553,7 +510,6 @@ describe('ScriptRunner', () => {
         async: false,
         browser: 'browser',
         browserOptioins: {},
-        concurrency: 1,
         scriptArgs: [1, 2],
         scriptTimeout: 10,
         server: 'server',
@@ -564,7 +520,7 @@ describe('ScriptRunner', () => {
 
       beforeEach(() => {
         driverStub.executeAsyncScript
-          .returns(webdriver.promise.Promise.resolve(1));
+          .returns(Promise.resolve(1));
         promise = new ScriptRunner(options).run('script');
       });
 
@@ -589,7 +545,6 @@ describe('ScriptRunner', () => {
       async: false,
       browser: 'browser',
       browserOptioins: {},
-      concurrency: 1,
       scriptArgs: [],
       scriptTimeout: 10,
       server: 'server',

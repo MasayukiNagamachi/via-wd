@@ -29,11 +29,10 @@ If you have already installed Docker onto your local machine, you can use
   Options:
 
     -V, --version                      output the version number
-    -a, --script-args <arg>            Arguments passed to the JavaScript code (default: [])
+    -a, --script-args <arg>            Arguments passed to the JavaScript code (default: )
     -b, --browser <chrome or firefox>  Browser where the JavaScript code will be run (default: chrome)
-    -c, --concurrency <number>         Number of ControlFlows to be run at the same time (default: 1)
-    -l, --logging <logger:level>       Filters for the local logging of selenium-webdriver (default: [])
-    -o, --browser-options <json>       Browser specific options (default: {})
+    -l, --logging <logger:level>       Filters for the local logging of selenium-webdriver (default: )
+    -o, --browser-options <json>       Browser specific options (default: [object Object])
     -s, --server [uri]                 Use a WebDriver server which is already running (default: false)
     --async                            Run the JavaScript code asynchronously
     --script-timeout <sec>             Asynchronous script execution time limit in seconds (default: 10)

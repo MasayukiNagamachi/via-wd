@@ -45,25 +45,6 @@ function disableLogging() {
   webdriver.logging.getLogger().removeHandler(logHandler_);
 }
 
-// FlowControl Pool
-
-class FlowPool {
-  constructor(concurrency) {
-    this.concurrency_ = concurrency;
-    this.flows_ = _.times(concurrency, () => new webdriver.promise.ControlFlow);
-    this.roundRobinIndex_ = 0;
-    this.logger_ = webdriver.logging.getLogger('wd-runjs.flow-pool');
-    this.logger_.debug(`concurrency: ${concurrency}`);
-  }
-
-  getFlow() {
-    this.logger_.debug(`round-robin index: ${this.roundRobinIndex_}`);
-    const flow = this.flows_[this.roundRobinIndex_];
-    this.roundRobinIndex_ = (this.roundRobinIndex_ + 1) % this.concurrency_;
-    return flow;
-  }
-}
-
 // ScriptRunner
 
 class ScriptRunner {
@@ -71,7 +52,6 @@ class ScriptRunner {
     this.options_ = options;
     this.aborted_ = false;
     this.promises_ = [];
-    this.flowPool_ = new FlowPool(options.concurrency);
     this.logger_ = webdriver.logging.getLogger('wd-runjs.script-runner');
     this.logger_.debug(JSON.stringify(options));
   }
@@ -90,12 +70,16 @@ class ScriptRunner {
     this.setBrowserOptions_(builder);
     const promises = _.map(this.options_.uris, (uri) => {
       let value = { uri: uri, browser: this.options_.browser };
-      const driver = builder.setControlFlow(this.flowPool_.getFlow()).build();
-      if (this.options_.async) {
-        driver.manage().timeouts().setScriptTimeout(
-          this.options_.scriptTimeout * 1000);
-      }
+      const driver = builder.build();
       return driver
+        .then(() => {
+          if (this.options_.async) {
+            return driver.manage().setTimeouts({
+              script: this.options_.scriptTimeout * 1000
+            });
+          }
+          return Promise.resolve();
+        })
         .then(this.abortable_(() => {
           this.logger_.debug(`${uri}: start nativation...`);
           return this.navigate_(driver, uri);
@@ -134,7 +118,7 @@ class ScriptRunner {
 
     this.promises_ = _.concat(this.promises_, promises);
 
-    return webdriver.promise.all(promises)
+    return Promise.all(promises)
       .then((results) => {  // always reach here even if errors occurred
         // promises in the parent lexical scope are resolved.
         // Remove them from `this.promises_`.
@@ -161,8 +145,7 @@ class ScriptRunner {
   abortable_(func) {
     return _.rest((args) => {
       if (this.aborted_) {
-        return webdriver.promise.Promise.reject(
-          webdriver.promise.CancellationError.wrap('aborted'));
+        return Promise.reject(Error.wrap('aborted'));
       }
       return func.apply(this, args);
     });
@@ -203,5 +186,4 @@ module.exports.logging = {
   enable: enableLogging,
   disable: disableLogging
 };
-module.exports.FlowPool = FlowPool;
 module.exports.ScriptRunner = ScriptRunner;
