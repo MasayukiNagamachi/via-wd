@@ -2,10 +2,10 @@
 
 [![NPM Version][npm-version]][npm-site]
 [![Build Status][build-status]][build-site]
-[![Coverage Status][coverage-status]][coverage-site]
 [![Dependency Status][dependency-status]][dependency-site]
-[![Maintainability Status][maintainability-status]][maintainability-site]
 [![Codacy Status][codacy-status]][codacy-site]
+[![Maintainability Status][maintainability-status]][maintainability-site]
+[![Coverage Status][coverage-status]][coverage-site]
 
 `wd-runjs` is a tiny command which runs JavaScript code on browsers by piping
 stdin via [Selenium WebDriver].
@@ -174,14 +174,14 @@ file for details.
 [npm-site]: https://www.npmjs.com/package/wd-runjs
 [build-status]: https://travis-ci.org/masnagam/wd-runjs.svg?branch=master
 [build-site]: https://travis-ci.org/masnagam/wd-runjs
-[coverage-status]: https://codecov.io/gh/masnagam/wd-runjs/branch/master/graph/badge.svg
-[coverage-site]: https://codecov.io/gh/masnagam/wd-runjs
 [dependency-status]: https://gemnasium.com/badges/github.com/masnagam/wd-runjs.svg
 [dependency-site]: https://gemnasium.com/github.com/masnagam/wd-runjs
-[maintainability-status]: https://api.codeclimate.com/v1/badges/b051a52030c4f03b325e/maintainability
-[maintainability-site]: https://codeclimate.com/github/masnagam/wd-runjs/maintainability
 [codacy-status]: https://api.codacy.com/project/badge/Grade/93778b9da3c14490807a75efd893fc55
 [codacy-site]: https://www.codacy.com/app/masnagam/wd-runjs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=masnagam/wd-runjs&amp;utm_campaign=Badge_Grade
+[maintainability-status]: https://api.codeclimate.com/v1/badges/b051a52030c4f03b325e/maintainability
+[maintainability-site]: https://codeclimate.com/github/masnagam/wd-runjs/maintainability
+[coverage-status]: https://api.codeclimate.com/v1/badges/b051a52030c4f03b325e/test_coverage
+[coverage-site]: https://codeclimate.com/github/masnagam/wd-runjs/test_coverage
 [Selenium WebDriver]: https://www.npmjs.com/package/selenium-webdriver
 [jq]: https://stedolan.github.io/jq/
 [masnagam/docker-compose-collection]: https://github.com/masnagam/docker-compose-collection/tree/master/selenium-grid
