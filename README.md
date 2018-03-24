@@ -132,12 +132,10 @@ By using the logging option, it is possible to output messages for debugging.
 
 The following loggers are defined in wd-runjs.
 
-* wd-runjs.flow-pool
 * wd-runjs.script-runner
 * webdriver.Builder
 * webdriver.http
 * webdriver.http.Executor
-* promise
 
 For available levels, see [selenium-webdriver's document](http://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/lib/logging_exports_Level.html).
 
