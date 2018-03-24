@@ -3,7 +3,6 @@
 
 'use strict';
 
-const _ = require('lodash');
 const chai = require('chai');
 const moment = require('moment');
 const path = require('path');
@@ -95,7 +94,7 @@ describe('ScriptRunner', () => {
 
     driverStub = Promise.resolve();
     driverStub.get = sinon.stub();
-    driverStub.getTitle = sinon.stub().returns('title');
+    driverStub.getTitle = sinon.stub().returns(Promise.resolve('title'));
     driverStub.executeScript = sinon.stub();
     driverStub.executeAsyncScript = sinon.stub();
     driverStub.manage = sinon.stub().returns(optionsStub);
@@ -122,34 +121,25 @@ describe('ScriptRunner', () => {
   });
 
   describe('#run', () => {
-    context('when multiple URIs are specified', () => {
+    context('when multiple targets are specified', () => {
       const options = {
         async: false,
         browser: 'browser',
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: 'server',
-        uris: ['uri:uri1', 'uri:uri2', 'uri:uri3', 'uri:uri4']
+        server: 'server'
       };
 
-      let promise;
+      const targets = ['uri:uri1', 'uri:uri2', 'uri:uri3', 'uri:uri4'];
 
       beforeEach(() => {
         driverStub.executeScript.returns(Promise.resolve(1));
-        promise = new ScriptRunner(options).run('script');
       });
 
-      afterEach(() => {
-        promise = null;
-      });
-
-      it('should get results as many as URIs', (done) => {
-        promise
-          .then((results) => {
-            expect(results).to.have.lengthOf(options.uris.length);
-          })
-          .then(done);
+      it('should get results as many as targets', async () => {
+        const results = await new ScriptRunner(options).run('script', targets);
+        expect(results).to.have.lengthOf(targets.length);
       });
     });
 
@@ -160,38 +150,25 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: 'server',
-        uris: ['uri:uri']
+        server: 'server'
       };
 
-      let promise;
+      const targets = ['uri:uri'];
 
       beforeEach(() => {
-        driverStub.executeScript
-          .returns(Promise.resolve(1));
-        promise = new ScriptRunner(options).run('script');
+        driverStub.executeScript.returns(Promise.resolve(1));
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
 
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
-      });
-
-      it('should set the title and the result', (done) => {
-        promise
-          .then((results) => {
-            expect(results[0].title).to.exist;
-            expect(results[0].result).to.exist;
-            expect(results[0].error).to.not.exist;
-          })
-          .then(done);
+      it('should set the title and the result', async () => {
+        const results = await new ScriptRunner(options).run('script', targets);
+        expect(results[0].title).to.exist;
+        expect(results[0].result).to.exist;
+        expect(results[0].error).to.not.exist;
       });
     });
 
@@ -202,36 +179,24 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: 'server',
-        uris: ['uri:uri']
+        server: 'server'
       };
 
-      let promise;
+      const targets = ['uri:uri'];
 
       beforeEach(() => {
         driverStub.executeScript.throws(new Error);
-        promise = new ScriptRunner(options).run('script');
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
 
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
-      });
-
-      it('should set the error', (done) => {
-        promise
-          .then((results) => {
-            expect(results[0].result).to.not.exist;
-            expect(results[0].error).to.exist;
-          })
-          .then(done);
+      it('should set the error', async () => {
+        const results = await new ScriptRunner(options).run('script', targets);
+        expect(results[0].result).to.not.exist;
+        expect(results[0].error).to.exist;
       });
     });
 
@@ -242,44 +207,29 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: 'server',
-        uris: ['uri:uri']
+        server: 'server'
       };
 
-      let promise;
+      const targets = ['uri:uri'];
 
       beforeEach(() => {
         driverStub.get.throws(new Error);
-        promise = new ScriptRunner(options).run('script');
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
 
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
+      it('should not call driver.executeScript()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.executeScript).to.have.not.been.called;
       });
 
-      it('should not call driver.executeScript()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.executeScript).to.have.not.been.called;
-          })
-          .then(done);
-      });
-
-      it('should set the error', (done) => {
-        promise
-          .then((results) => {
-            expect(results[0].result).to.not.exist;
-            expect(results[0].error).to.exist;
-          })
-          .then(done);
+      it('should set the error', async () => {
+        const results = await new ScriptRunner(options).run('script', targets);
+        expect(results[0].result).to.not.exist;
+        expect(results[0].error).to.exist;
       });
     });
 
@@ -290,42 +240,24 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: 'server',
-        uris: [path.join(__dirname, 'navigation.js')]
+        server: 'server'
       };
 
-      let promise;
+      const targets = [path.join(__dirname, 'navigation.js')];
 
-      beforeEach(() => {
-        promise = new ScriptRunner(options).run('script');
+      it('should not call driver.get()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.get).to.have.not.been.called;
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call driver.executeScript()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.executeScript).to.have.been.calledOnce;
       });
 
-      it('should not call driver.get()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.get).to.have.not.been.called;
-          })
-          .then(done);
-      });
-
-      it('should call driver.executeScript()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.executeScript).to.have.been.calledOnce;
-          })
-          .then(done);
-      });
-
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
     });
 
@@ -336,42 +268,24 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: false,
-        uris: ['@current']
+        server: false
       };
 
-      let promise;
+      const targets = ['@current'];
 
-      beforeEach(() => {
-        promise = new ScriptRunner(options).run('script');
+      it('should not call driver.get()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.get).to.have.not.been.called;
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call driver.executeScript()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.executeScript).to.have.been.calledOnce;
       });
 
-      it('should not call driver.get()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.get).to.have.not.been.called;
-          })
-          .then(done);
-      });
-
-      it('should call driver.executeScript()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.executeScript).to.have.been.calledOnce;
-          })
-          .then(done);
-      });
-
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
     });
 
@@ -382,43 +296,25 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: false,
-        uris: ['@unsupported']
+        server: false
       };
 
-      let promise;
+      const targets = ['@unsupported'];
 
-      beforeEach(() => {
-        promise = new ScriptRunner(options).run('script');
+      it('should not call driver.executeScript()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.executeScript).to.have.not.been.calledOnce;
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
 
-      it('should not call driver.executeScript()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.executeScript).to.have.not.been.calledOnce;
-          })
-          .then(done);
-      });
-
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
-      });
-
-      it('should set the error', (done) => {
-        promise
-          .then((results) => {
-            expect(results[0].result).to.not.exist;
-            expect(results[0].error).to.exist;
-          })
-          .then(done);
+      it('should set the error', async () => {
+        const results = await new ScriptRunner(options).run('script', targets);
+        expect(results[0].result).to.not.exist;
+        expect(results[0].error).to.exist;
       });
     });
 
@@ -429,35 +325,20 @@ describe('ScriptRunner', () => {
         browserOptioins: {key: 'value'},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: false,
-        uris: ['@current']
+        server: false
       };
 
-      let promise;
+      const targets = ['@current'];
 
-      beforeEach(() => {
-        promise = new ScriptRunner(options).run('script');
+      it('should set chromeOptions', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(capsStub.has('chromeOptions')).to.be.true;
+        expect(capsStub.get('chromeOptions')).to.eql(options.browserOptions);
       });
 
-      afterEach(() => {
-        promise = null;
-      });
-
-      it('should set chromeOptions', (done) => {
-        promise
-          .then((results) => {
-            expect(capsStub.has('chromeOptions')).to.be.true;
-            expect(capsStub.get('chromeOptions')).to.eql(options.browserOptions);
-          })
-          .then(done);
-      });
-
-      it('should call driver.quit()', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.quit).to.have.been.calledOnce;
-          })
-          .then(done);
+      it('should call driver.quit()', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.quit).to.have.been.calledOnce;
       });
     });
 
@@ -468,40 +349,26 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [],
         scriptTimeout: 10,
-        server: 'server',
-        uris: ['uri:uri']
+        server: 'server'
       };
 
-      let promise;
+      const targets = ['uri:uri'];
 
       beforeEach(() => {
-        driverStub.executeAsyncScript
-          .returns(Promise.resolve(1));
-        promise = new ScriptRunner(options).run('script');
+        driverStub.executeAsyncScript.returns(Promise.resolve(1));
       });
 
-      afterEach(() => {
-        promise = null;
+      it('should call setTimeouts', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(optionsStub.setTimeouts).to.have.been.calledOnce;
+        expect(optionsStub.setTimeouts).to.have.been.calledWith({
+          script: options.scriptTimeout * 1000
+        });
       });
 
-      it('should call setTimeouts', (done) => {
-        promise
-          .then((results) => {
-            expect(optionsStub.setTimeouts).to.have.been.calledOnce;
-            expect(optionsStub.setTimeouts)
-              .to.have.been.calledWith({
-                script: options.scriptTimeout * 1000
-              });
-          })
-          .then(done);
-      });
-
-      it('should call executeAsyncScript', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.executeAsyncScript).to.have.been.calledOnce;
-          })
-          .then(done);
+      it('should call executeAsyncScript', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.executeAsyncScript).to.have.been.calledOnce;
       });
     });
 
@@ -512,30 +379,20 @@ describe('ScriptRunner', () => {
         browserOptioins: {},
         scriptArgs: [1, 2],
         scriptTimeout: 10,
-        server: 'server',
-        uris: ['uri:uri']
+        server: 'server'
       };
 
-      let promise;
+      const targets = ['uri:uri'];
 
       beforeEach(() => {
-        driverStub.executeAsyncScript
-          .returns(Promise.resolve(1));
-        promise = new ScriptRunner(options).run('script');
+        driverStub.executeAsyncScript.returns(Promise.resolve(1));
       });
 
-      afterEach(() => {
-        promise = null;
-      });
-
-      it('should call setScriptTimeout with the script arguments', (done) => {
-        promise
-          .then((results) => {
-            expect(driverStub.executeScript).to.have.been.calledOnce;
-            expect(driverStub.executeScript).to.have.been.calledWith(
-              'const ARGS = arguments;\nscript', ...options.scriptArgs);
-          })
-          .then(done);
+      it('should call setScriptTimeout with the script arguments', async () => {
+        await new ScriptRunner(options).run('script', targets);
+        expect(driverStub.executeScript).to.have.been.calledOnce;
+        expect(driverStub.executeScript).to.have.been.calledWith(
+          'const ARGS = arguments;\nscript', ...options.scriptArgs);
       });
     });
   });
@@ -547,65 +404,33 @@ describe('ScriptRunner', () => {
       browserOptioins: {},
       scriptArgs: [],
       scriptTimeout: 10,
-      server: 'server',
-      uris: ['uri:uri1', 'uri:uri2']
+      server: 'server'
     };
 
-    let runner = null;
-
-    beforeEach(() => {
-      runner = new ScriptRunner(options);
-    });
-
-    afterEach(() => {
-      runner = null;
-    });
+    const targets = ['uri:uri1', 'uri:uri2'];
 
     context('when it is called before running script', () => {
-      let promise = null;
-
-      beforeEach(() => {
-        promise = runner.run('script');
+      it('should abort the all promises', async () => {
+        const runner = new ScriptRunner(options);
+        const promise = runner.run('script', targets);
         runner.abort();
-      });
-
-      afterEach(() => {
-        promise = null;
-      });
-
-      it('should abort the all promises', (done) => {
-        promise
-          .then((results) => {
-            _.each(results, (result) => {
-              expect(result).to.not.have.property('result');
-              expect(result).to.have.property('error');
-            });
-          })
-          .then(done);
+        const results = await promise;
+        results.forEach((result) => {
+          expect(result).to.not.have.property('result');
+          expect(result).to.have.property('error');
+        });
       });
     });
 
     context('when it is called after running script', () => {
-      let promise = null;
-
-      beforeEach(() => {
+      it('should abort the remaining promises', async () => {
+        const runner = new ScriptRunner(options);
         driverStub.executeScript = () => runner.abort();
-        promise = runner.run('script');
-      });
-
-      afterEach(() => {
-        promise = null;
-      });
-
-      it('should abort the remaining promises', (done) => {
-        promise
-          .then((results) => {
-            expect(results[0]).to.have.property('result');
-            expect(results[0]).to.not.have.property('error');
-            expect(results[1]).to.not.have.property('result');
-            expect(results[1]).to.have.property('error');
-          })
-          .then(done);
+        const results = await runner.run('script', targets);
+        expect(results[0]).to.have.property('result');
+        expect(results[0]).to.not.have.property('error');
+        expect(results[1]).to.not.have.property('result');
+        expect(results[1]).to.have.property('error');
       });
     });
   });

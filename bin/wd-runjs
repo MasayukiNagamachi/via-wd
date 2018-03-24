@@ -8,6 +8,7 @@
 const program = require('commander');
 const _ = require('lodash');
 const fs = require('fs');
+const streamToString = require('stream-to-string');
 const ScriptRunner = require('..').ScriptRunner;
 const logging = require('..').logging;
 
@@ -70,47 +71,44 @@ program
     'Asynchronous script execution time limit in seconds',
     parseInt,
     DEFAULT_SCRIPT_TIMEOUT)
+  .arguments('[targets...]')
+  .action(async (targets) => {
+    if (program.server) {
+      if (program.server === true) {
+        program.server = DEFAULT_SERVER_URI;
+      }
+    }
+
+    if (program.logging.length > 0) {
+      logging.setSink((msg) => console.error(msg));
+      logging.setFilters(program.logging);
+      logging.enable();
+    }
+
+    if (_.isEmpty(targets)) {
+      targets = ['@current']
+    }
+
+    const options = {
+      async: program.async,
+      browser: program.browser,
+      browserOptions: program.browserOptions,
+      scriptArgs: program.scriptArgs,
+      scriptTimeout: program.scriptTimeout,
+      server: program.server
+    };
+
+    const runner = new ScriptRunner(options);
+
+    process.on('SIGINT', () => {  // Ctrl-C
+      if (_.isNil(runner)) {
+        process.exit(1);
+      } else {
+        runner.abort();
+      }
+    });
+
+    const script = await streamToString(process.stdin);
+    console.log(JSON.stringify(await runner.run(script, targets)));
+  })
   .parse(process.argv);
-
-if (program.server) {
-  if (program.server === true) {
-    program.server = DEFAULT_SERVER_URI;
-  }
-}
-
-if (program.logging.length > 0) {
-  logging.setSink((msg) => console.error(msg));
-  logging.setFilters(program.logging);
-  logging.enable();
-}
-
-const options = {
-  async: program.async,
-  browser: program.browser,
-  browserOptions: program.browserOptions,
-  scriptArgs: program.scriptArgs,
-  scriptTimeout: program.scriptTimeout,
-  server: program.server,
-  uris: program.args
-};
-
-if (_.isEmpty(options.uris)) {
-  options.uris = ['@current']
-}
-
-let script = '';
-process.stdin.on('data', (str) => script += str);
-
-let runner = null;
-process.stdin.on('end', () => {
-  runner = new ScriptRunner(options);
-  runner.run(script).then(JSON.stringify).then(console.log);
-});
-
-process.on('SIGINT', () => {  // Ctrl-C
-  if (_.isNil(runner)) {
-    process.exit(1);
-  } else {
-    runner.abort();
-  }
-});

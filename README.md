@@ -89,11 +89,13 @@ $ cat uris
 http://www.bbc.com/
 http://edition.cnn.com/
 http://abcnews.go.com/
-$ echo "return 'hello';" | wd-runjs -c 3 $(cat uris)
+$ echo "return 'hello';" | wd-runjs $(cat uris)
 ```
 
-It is recommended to specify the concurrency number less than the number of
-available Chrome instances.
+NOTE: The concurrency option has been removed.  Because functions which were
+used for implementing this feature have been removed from the latest
+`selenium-webdriver` package.  This feature might be implemented again in
+future.
 
 Navigation script:
 

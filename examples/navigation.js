@@ -4,16 +4,18 @@
 'use strict';
 
 const webdriver = require('selenium-webdriver');
-const logger = webdriver.logging.getLogger('wd-runjs.navigation');
+const By = webdriver.By;
+const Key = webdriver.Key;
+const logger = webdriver.logging.getLogger('example');
+const until = webdriver.until;
 
 // Example of a navigation script.
 // This script searches 'webdriver' with Google.
-module.exports.navigate = (driver) => {
+module.exports.navigate = async (driver) => {
   logger.debug('searching "webdriver" with Google...');
-  driver.get('http://www.google.com/ncr');
-  driver.wait(webdriver.until.elementLocated(webdriver.By.name('q')), 1000)
-    .sendKeys('webdriver');
-  driver.wait(webdriver.until.elementLocated(webdriver.By.name('btnG')), 1000)
-    .click();
-  driver.wait(webdriver.until.titleIs('webdriver - Google Search'), 1000);
+  await driver.get('https://www.google.com/');
+  const input = await driver.findElement(By.name('q'));
+  await input.sendKeys('webdriver', Key.RETURN);
+  await driver.wait(until.titleContains('webdriver'), 1000);
+  logger.debug('Done');
 };

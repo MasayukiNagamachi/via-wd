@@ -1,6 +1,8 @@
 ## Next Release
 
 * Update selenium-webdriver to 4.0.0
+  * The concurrency option has been removed
+* Rewrite using async/await
 
 ## 1.3.0 (2017-07-17)
 
