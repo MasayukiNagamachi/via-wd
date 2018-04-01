@@ -10,6 +10,11 @@ before_script:
   - ./cc-test-reporter before-build
 after_script:
   - $(npm bin)/nyc report -r lcov
-  - bash <(curl -s https://codecov.io/bash)
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - cat coverage/lcov.info | codacy-coverage
+deploy:
+  provider: npm
+  email: $NPM_EMAIL
+  api_key: $NPM_TOKEN
+  on:
+    tags: true
