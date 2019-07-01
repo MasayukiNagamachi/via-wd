@@ -2,7 +2,6 @@
 
 [![NPM Version][npm-version]][npm-site]
 [![Build Status][build-status]][build-site]
-[![Dependency Status][dependency-status]][dependency-site]
 [![Codacy Status][codacy-status]][codacy-site]
 [![Maintainability Status][maintainability-status]][maintainability-site]
 [![Coverage Status][coverage-status]][coverage-site]
@@ -174,8 +173,6 @@ file for details.
 [npm-site]: https://www.npmjs.com/package/wd-runjs
 [build-status]: https://travis-ci.org/masnagam/wd-runjs.svg?branch=master
 [build-site]: https://travis-ci.org/masnagam/wd-runjs
-[dependency-status]: https://gemnasium.com/badges/github.com/masnagam/wd-runjs.svg
-[dependency-site]: https://gemnasium.com/github.com/masnagam/wd-runjs
 [codacy-status]: https://api.codacy.com/project/badge/Grade/93778b9da3c14490807a75efd893fc55
 [codacy-site]: https://www.codacy.com/app/masnagam/wd-runjs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=masnagam/wd-runjs&amp;utm_campaign=Badge_Grade
 [maintainability-status]: https://api.codeclimate.com/v1/badges/b051a52030c4f03b325e/maintainability
