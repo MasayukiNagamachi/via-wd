@@ -18,7 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^2.20.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "stream-to-string": "^1.2.0"
@@ -27,7 +27,7 @@
     "chai": "^4.2.0",
     "html2canvas": "^1.0.0-alpha.10",
     "jquery": "^3.4.1",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.0",
     "nyc": "^14.1.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0"
