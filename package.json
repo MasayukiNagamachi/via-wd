@@ -17,7 +17,7 @@
   "author": "Masayuki Nagamachi <masayuki.nagamachi@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "commander": "^4.0.1",
+    "commander": "^5.0.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "selenium-webdriver": "^4.0.0-alpha.1",
