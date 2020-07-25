@@ -1,10 +1,9 @@
 # wd-runjs
 
-[![NPM Version][npm-version]][npm-site]
-[![Build Status][build-status]][build-site]
-[![Codacy Status][codacy-status]][codacy-site]
-[![Maintainability Status][maintainability-status]][maintainability-site]
-[![Coverage Status][coverage-status]][coverage-site]
+[![npm (scoped)](https://img.shields.io/npm/v/wd-runjs)](https://www.npmjs.com/package/wd-runjs)
+[![CI](https://github.com/masnagam/wd-runjs/workflows/CI/badge.svg)](https://github.com/masnagam/wd-runjs/actions?query=workflow%3ACI)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b051a52030c4f03b325e/maintainability)](https://codeclimate.com/github/masnagam/wd-runjs/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b051a52030c4f03b325e/test_coverage)](https://codeclimate.com/github/masnagam/wd-runjs/test_coverage)
 
 `wd-runjs` is a tiny command which runs JavaScript code on browsers by piping
 stdin via [Selenium WebDriver].
